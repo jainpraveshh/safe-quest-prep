@@ -125,8 +125,25 @@ export const DisasterSelection = ({ onBack, onSelectDisaster }: DisasterSelectio
                     variant="outline" 
                     size="sm"
                     className="group-hover:bg-primary group-hover:text-primary-foreground transition-colors"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onSelectDisaster(disaster.type);
+                    }}
                   >
                     Start Training
+                  </Button>
+                  
+                  <Button 
+                    variant="default" 
+                    size="sm"
+                    className="ml-2"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      // This would start drill simulation directly
+                      onSelectDisaster(disaster.type + '-drill');
+                    }}
+                  >
+                    Start Drill
                   </Button>
                 </div>
               </div>

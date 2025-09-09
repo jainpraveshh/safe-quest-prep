@@ -5,11 +5,12 @@ import { QuizComponent } from "@/components/QuizComponent";
 import { StudentDashboard } from "@/components/StudentDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { EmergencyTools } from "@/components/EmergencyTools";
+import { DrillSimulation } from "@/components/DrillSimulation";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Shield, Users, AlertTriangle, BarChart3 } from "lucide-react";
 
-type Screen = 'welcome' | 'disaster-selection' | 'quiz' | 'student-dashboard' | 'admin-dashboard' | 'emergency-tools';
+type Screen = 'welcome' | 'disaster-selection' | 'quiz' | 'student-dashboard' | 'admin-dashboard' | 'emergency-tools' | 'drill-simulation';
 
 const Index = () => {
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
@@ -20,11 +21,20 @@ const Index = () => {
   };
 
   const handleDisasterSelect = (disasterType: string) => {
-    setSelectedDisaster(disasterType);
-    setCurrentScreen('quiz');
+    if (disasterType.includes('-drill')) {
+      setSelectedDisaster(disasterType.replace('-drill', ''));
+      setCurrentScreen('drill-simulation');
+    } else {
+      setSelectedDisaster(disasterType);
+      setCurrentScreen('quiz');
+    }
   };
 
   const handleQuizComplete = () => {
+    setCurrentScreen('drill-simulation');
+  };
+
+  const handleDrillComplete = () => {
     setCurrentScreen('student-dashboard');
   };
 
@@ -106,6 +116,14 @@ const Index = () => {
       
       {currentScreen === 'emergency-tools' && (
         <EmergencyTools onBack={() => navigateToScreen('disaster-selection')} />
+      )}
+      
+      {currentScreen === 'drill-simulation' && (
+        <DrillSimulation 
+          disasterType={selectedDisaster}
+          onBack={() => navigateToScreen('quiz')}
+          onComplete={handleDrillComplete}
+        />
       )}
     </>
   );
