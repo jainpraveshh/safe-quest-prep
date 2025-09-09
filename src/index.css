@@ -2,13 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* Disaster Preparedness App Design System - Bright, Alert-Driven Colors */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    /* Base Theme - Clean & Professional */
+    --background: 210 20% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -17,8 +16,18 @@ All colors MUST be HSL.
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Alert-Driven Color System */
+    --primary: 220 91% 52%; /* Trust Blue - Safety Info */
+    --primary-foreground: 0 0% 100%;
+
+    --emergency: 0 84% 60%; /* Urgent Red - SOS, Fire */
+    --emergency-foreground: 0 0% 100%;
+
+    --warning: 25 95% 53%; /* Alert Orange - Warnings */
+    --warning-foreground: 0 0% 100%;
+
+    --success: 142 76% 36%; /* Safety Green - Completion */
+    --success-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -34,9 +43,26 @@ All colors MUST be HSL.
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --ring: 220 91% 52%;
 
-    --radius: 0.5rem;
+    /* Disaster-Specific Gradients */
+    --earthquake-gradient: linear-gradient(135deg, 30 80% 50%, 15 85% 55%);
+    --fire-gradient: linear-gradient(135deg, 0 84% 60%, 25 95% 53%);
+    --flood-gradient: linear-gradient(135deg, 220 91% 52%, 200 95% 45%);
+    --cyclone-gradient: linear-gradient(135deg, 240 15% 65%, 220 25% 40%);
+
+    /* Gamification Colors */
+    --badge-gold: 45 100% 50%;
+    --badge-silver: 0 0% 75%;
+    --badge-bronze: 25 75% 47%;
+    --points-glow: 60 100% 50%;
+
+    /* Shadows & Effects */
+    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-emergency: 0 10px 25px -5px hsla(0, 84%, 60%, 0.4);
+    --shadow-success: 0 10px 25px -5px hsla(142, 76%, 36%, 0.3);
+
+    --radius: 12px;
 
     --sidebar-background: 0 0% 98%;
 

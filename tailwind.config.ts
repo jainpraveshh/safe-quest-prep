@@ -47,6 +47,25 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        // Alert-Driven Disaster Colors
+        emergency: {
+          DEFAULT: "hsl(var(--emergency))",
+          foreground: "hsl(var(--emergency-foreground))",
+        },
+        warning: {
+          DEFAULT: "hsl(var(--warning))",
+          foreground: "hsl(var(--warning-foreground))",
+        },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        // Gamification Colors
+        badge: {
+          gold: "hsl(var(--badge-gold))",
+          silver: "hsl(var(--badge-silver))",
+          bronze: "hsl(var(--badge-bronze))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
@@ -57,6 +76,17 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+      },
+      backgroundImage: {
+        'earthquake': 'var(--earthquake-gradient)',
+        'fire': 'var(--fire-gradient)',
+        'flood': 'var(--flood-gradient)',
+        'cyclone': 'var(--cyclone-gradient)',
+      },
+      boxShadow: {
+        'card': 'var(--shadow-card)',
+        'emergency': 'var(--shadow-emergency)',
+        'success': 'var(--shadow-success)',
       },
       borderRadius: {
         lg: "var(--radius)",
