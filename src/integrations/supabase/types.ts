@@ -14,7 +14,87 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      profiles: {
+        Row: {
+          age_group: string | null
+          badges_earned: number | null
+          class_no: string | null
+          created_at: string
+          id: string
+          name: string
+          points: number | null
+          region: string
+          roll_no: string | null
+          school_name: string
+          streak_count: number | null
+          updated_at: string
+          user_id: string
+          user_role: string
+        }
+        Insert: {
+          age_group?: string | null
+          badges_earned?: number | null
+          class_no?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          points?: number | null
+          region: string
+          roll_no?: string | null
+          school_name: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id: string
+          user_role?: string
+        }
+        Update: {
+          age_group?: string | null
+          badges_earned?: number | null
+          class_no?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          points?: number | null
+          region?: string
+          roll_no?: string | null
+          school_name?: string
+          streak_count?: number | null
+          updated_at?: string
+          user_id?: string
+          user_role?: string
+        }
+        Relationships: []
+      }
+      regional_disasters: {
+        Row: {
+          created_at: string
+          description: string | null
+          disaster_type: string
+          id: string
+          preparedness_tips: string[] | null
+          region: string
+          severity: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          disaster_type: string
+          id?: string
+          preparedness_tips?: string[] | null
+          region: string
+          severity: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          disaster_type?: string
+          id?: string
+          preparedness_tips?: string[] | null
+          region?: string
+          severity?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

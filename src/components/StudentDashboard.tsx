@@ -276,18 +276,18 @@ export const StudentDashboard = ({ onBack }: StudentDashboardProps) => {
                 Class Leaderboard
               </h2>
               <div className="space-y-3">
-                {[
-                  { name: "Sarah M.", points: 1890, rank: 1, streak: 15, badges: 12 },
-                  { name: "Mike K.", points: 1654, rank: 2, streak: 8, badges: 10 },
-                  { name: "Emma L.", points: 1523, rank: 3, streak: 12, badges: 9 },
-                  { name: "Alex R.", points: 1445, rank: 4, streak: 6, badges: 8 },
-                  { name: "Jordan T.", points: 1398, rank: 5, streak: 3, badges: 7 },
-                  { name: "Casey W.", points: 1267, rank: 6, streak: 9, badges: 6 },
-                  { name: "You", points: 1240, rank: 7, streak: 5, badges: 8, current: true },
-                  { name: "Taylor B.", points: 1156, rank: 8, streak: 2, badges: 5 },
-                  { name: "Morgan L.", points: 1089, rank: 9, streak: 4, badges: 6 },
-                  { name: "Riley S.", points: 1023, rank: 10, streak: 1, badges: 4 },
-                ].map((student, index) => (
+                 {[
+                   { name: "Aarav Sharma", points: 1890, rank: 1, streak: 15, badges: 12 },
+                   { name: "Priya Patel", points: 1654, rank: 2, streak: 8, badges: 10 },
+                   { name: "Rohan Singh", points: 1523, rank: 3, streak: 12, badges: 9 },
+                   { name: "Sneha Reddy", points: 1445, rank: 4, streak: 6, badges: 8 },
+                   { name: "Arjun Kumar", points: 1398, rank: 5, streak: 3, badges: 7 },
+                   { name: "Kavya Iyer", points: 1267, rank: 6, streak: 9, badges: 6 },
+                   { name: "You", points: 1240, rank: 7, streak: 5, badges: 8, current: true },
+                   { name: "Dev Gupta", points: 1156, rank: 8, streak: 2, badges: 5 },
+                   { name: "Ananya Das", points: 1089, rank: 9, streak: 4, badges: 6 },
+                   { name: "Ishaan Joshi", points: 1023, rank: 10, streak: 1, badges: 4 },
+                 ].map((student, index) => (
                   <div key={index} className={`flex items-center justify-between p-3 rounded-lg ${student.current ? 'bg-primary/10 border border-primary/20' : 'bg-muted/20'}`}>
                     <div className="flex items-center">
                       <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold mr-3 ${

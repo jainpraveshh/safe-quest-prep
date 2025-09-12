@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useAuth } from "@/hooks/useAuth";
+import { AuthPage } from "@/components/auth/AuthPage";
 import { WelcomeScreen } from "@/components/WelcomeScreen";
 import { DisasterSelection } from "@/components/DisasterSelection";
 import { QuizComponent } from "@/components/QuizComponent";
@@ -6,13 +8,14 @@ import { StudentDashboard } from "@/components/StudentDashboard";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { EmergencyTools } from "@/components/EmergencyTools";
 import { DrillSimulation } from "@/components/DrillSimulation";
+import { RegionalDisasterAwareness } from "@/components/RegionalDisasterAwareness";
+import { Home, Users, UserCog, AlertCircle, LogOut, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Shield, Users, AlertTriangle, BarChart3 } from "lucide-react";
-
-type Screen = 'welcome' | 'disaster-selection' | 'quiz' | 'student-dashboard' | 'admin-dashboard' | 'emergency-tools' | 'drill-simulation';
 
 const Index = () => {
+  const { user, loading, signOut } = useAuth();
+  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness';
+  
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedDisaster, setSelectedDisaster] = useState<string>('');
 
@@ -21,111 +24,152 @@ const Index = () => {
   };
 
   const handleDisasterSelect = (disasterType: string) => {
-    if (disasterType.includes('-drill')) {
-      setSelectedDisaster(disasterType.replace('-drill', ''));
-      setCurrentScreen('drill-simulation');
+    setSelectedDisaster(disasterType);
+    // Navigate to quiz for most disasters, drill for specific ones
+    if (disasterType.includes('drill')) {
+      setCurrentScreen('drill');
     } else {
-      setSelectedDisaster(disasterType);
       setCurrentScreen('quiz');
     }
   };
 
-  const handleQuizComplete = () => {
-    setCurrentScreen('drill-simulation');
+  const handleAuthSuccess = () => {
+    setCurrentScreen('welcome');
   };
 
-  const handleDrillComplete = () => {
-    setCurrentScreen('student-dashboard');
-  };
+  // Show loading spinner while checking auth
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div>
+      </div>
+    );
+  }
 
-  // Navigation Bar (shown on all screens except welcome)
-  const NavigationBar = () => (
-    <div className="fixed top-4 right-4 z-50 flex items-center space-x-2">
-      {currentScreen !== 'welcome' && (
-        <>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigateToScreen('student-dashboard')}
-            className={currentScreen === 'student-dashboard' ? 'bg-primary text-primary-foreground' : ''}
-          >
-            <Users className="h-4 w-4 mr-1" />
-            Student
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigateToScreen('admin-dashboard')}
-            className={currentScreen === 'admin-dashboard' ? 'bg-primary text-primary-foreground' : ''}
-          >
-            <BarChart3 className="h-4 w-4 mr-1" />
-            Admin
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => navigateToScreen('emergency-tools')}
-            className={`${currentScreen === 'emergency-tools' ? 'bg-emergency text-emergency-foreground' : 'border-emergency text-emergency hover:bg-emergency/10'}`}
-          >
-            <AlertTriangle className="h-4 w-4 mr-1" />
-            Emergency
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => navigateToScreen('welcome')}
-            className="text-muted-foreground hover:text-foreground"
-          >
-            <Shield className="h-4 w-4" />
-          </Button>
-        </>
-      )}
-    </div>
-  );
+  // Show auth page if not logged in
+  if (!user) {
+    return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+  }
+
+  const NavigationBar = () => {
+    if (currentScreen === 'welcome') return null;
+    
+    return (
+      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setCurrentScreen('welcome')}
+              className="flex items-center gap-2"
+            >
+              <Home className="w-4 h-4" />
+              SafeLearn
+            </Button>
+            
+            <div className="flex items-center gap-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentScreen('studentDashboard')}
+                className="flex items-center gap-2"
+              >
+                <Users className="w-4 h-4" />
+                Dashboard
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentScreen('regionalAwareness')}
+                className="flex items-center gap-2"
+              >
+                <MapPin className="w-4 h-4" />
+                Regional Alerts
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentScreen('emergencyTools')}
+                className="flex items-center gap-2 text-red-600 hover:text-red-700"
+              >
+                <AlertCircle className="w-4 h-4" />
+                Emergency
+              </Button>
+
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={signOut}
+                className="flex items-center gap-2"
+              >
+                <LogOut className="w-4 h-4" />
+                Logout
+              </Button>
+            </div>
+          </div>
+        </div>
+      </nav>
+    );
+  };
 
   return (
-    <>
+    <div>
       <NavigationBar />
       
-      {currentScreen === 'welcome' && (
-        <WelcomeScreen onGetStarted={() => navigateToScreen('disaster-selection')} />
-      )}
-      
-      {currentScreen === 'disaster-selection' && (
-        <DisasterSelection 
-          onBack={() => navigateToScreen('welcome')}
-          onSelectDisaster={handleDisasterSelect}
-        />
-      )}
-      
-      {currentScreen === 'quiz' && (
-        <QuizComponent 
-          disasterType={selectedDisaster}
-          onBack={() => navigateToScreen('disaster-selection')}
-          onComplete={handleQuizComplete}
-        />
-      )}
-      
-      {currentScreen === 'student-dashboard' && (
-        <StudentDashboard onBack={() => navigateToScreen('disaster-selection')} />
-      )}
-      
-      {currentScreen === 'admin-dashboard' && (
-        <AdminDashboard onBack={() => navigateToScreen('disaster-selection')} />
-      )}
-      
-      {currentScreen === 'emergency-tools' && (
-        <EmergencyTools onBack={() => navigateToScreen('disaster-selection')} />
-      )}
-      
-      {currentScreen === 'drill-simulation' && (
-        <DrillSimulation 
-          disasterType={selectedDisaster}
-          onBack={() => navigateToScreen('quiz')}
-          onComplete={handleDrillComplete}
-        />
-      )}
-    </>
+      <main className="min-h-screen">
+        {currentScreen === 'welcome' && (
+          <WelcomeScreen 
+            onGetStarted={() => setCurrentScreen('disasters')}
+          />
+        )}
+        
+        {currentScreen === 'disasters' && (
+          <DisasterSelection 
+            onBack={() => setCurrentScreen('welcome')}
+            onSelectDisaster={handleDisasterSelect}
+          />
+        )}
+        
+        {currentScreen === 'quiz' && (
+          <QuizComponent 
+            disasterType={selectedDisaster}
+            onBack={() => setCurrentScreen('disasters')}
+            onComplete={() => setCurrentScreen('studentDashboard')}
+          />
+        )}
+        
+        {currentScreen === 'studentDashboard' && (
+          <StudentDashboard onBack={() => setCurrentScreen('welcome')} />
+        )}
+        
+        {currentScreen === 'adminDashboard' && (
+          <AdminDashboard onBack={() => setCurrentScreen('welcome')} />
+        )}
+        
+        {currentScreen === 'regionalAwareness' && (
+          <div className="pt-20 px-4">
+            <div className="max-w-4xl mx-auto">
+              <RegionalDisasterAwareness />
+            </div>
+          </div>
+        )}
+        
+        {currentScreen === 'emergencyTools' && (
+          <EmergencyTools onBack={() => setCurrentScreen('welcome')} />
+        )}
+        
+        {currentScreen === 'drill' && (
+          <DrillSimulation 
+            disasterType={selectedDisaster}
+            onBack={() => setCurrentScreen('disasters')}
+            onComplete={() => setCurrentScreen('studentDashboard')}
+          />
+        )}
+      </main>
+    </div>
   );
 };
 
