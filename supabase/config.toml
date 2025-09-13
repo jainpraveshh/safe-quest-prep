@@ -1,1 +1,7 @@
 project_id = "fbmlsdftletwtmnxhswk"
+
+[functions.disaster-alerts]
+verify_jwt = false
+
+[functions.evacuation-routes]
+verify_jwt = false

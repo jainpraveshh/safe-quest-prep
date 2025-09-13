@@ -9,12 +9,14 @@ import { AdminDashboard } from "@/components/AdminDashboard";
 import { EmergencyTools } from "@/components/EmergencyTools";
 import { DrillSimulation } from "@/components/DrillSimulation";
 import { RegionalDisasterAwareness } from "@/components/RegionalDisasterAwareness";
-import { Home, Users, UserCog, AlertCircle, LogOut, MapPin } from "lucide-react";
+import { DisasterAlertsPanel } from "@/components/DisasterAlertsPanel";
+import { EvacuationRoutes } from "@/components/EvacuationRoutes";
+import { Home, Users, UserCog, AlertCircle, LogOut, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
-  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness';
+  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness' | 'liveAlerts' | 'evacuationRoutes';
   
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedDisaster, setSelectedDisaster] = useState<string>('');
@@ -87,6 +89,25 @@ const Index = () => {
               >
                 <MapPin className="w-4 h-4" />
                 Regional Alerts
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentScreen('liveAlerts')}
+                className="flex items-center gap-2"
+              >
+                🚨 Alerts
+              </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setCurrentScreen('evacuationRoutes')}
+                className="flex items-center gap-2"
+              >
+                <Navigation className="w-4 h-4" />
+                Routes
               </Button>
               
               <Button
@@ -167,6 +188,67 @@ const Index = () => {
             onBack={() => setCurrentScreen('disasters')}
             onComplete={() => setCurrentScreen('studentDashboard')}
           />
+        )}
+        
+        {currentScreen === 'liveAlerts' && (
+          <div className="pt-20 px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-6">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setCurrentScreen('welcome')}
+                  className="mb-4"
+                >
+                  ← Back to Home
+                </Button>
+                <h1 className="text-3xl font-bold mb-2">Live Disaster Alerts</h1>
+                <p className="text-muted-foreground">
+                  Real-time alerts from NDMA and IMD for your region
+                </p>
+              </div>
+              <DisasterAlertsPanel />
+            </div>
+          </div>
+        )}
+        
+        {currentScreen === 'evacuationRoutes' && (
+          <div className="pt-20 px-4">
+            <div className="max-w-4xl mx-auto">
+              <div className="mb-6">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setCurrentScreen('welcome')}
+                  className="mb-4"
+                >
+                  ← Back to Home
+                </Button>
+                <h1 className="text-3xl font-bold mb-2">Evacuation Routes & Safe Zones</h1>
+                <p className="text-muted-foreground">
+                  Find the nearest safe zones and evacuation routes for different disaster scenarios
+                </p>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                  {['Flood', 'Earthquake', 'Cyclone'].map((disaster) => (
+                    <Button
+                      key={disaster}
+                      variant={selectedDisaster === disaster ? "default" : "outline"}
+                      onClick={() => setSelectedDisaster(disaster)}
+                      className="h-auto py-4"
+                    >
+                      <div className="text-center">
+                        <div className="text-2xl mb-2">
+                          {disaster === 'Flood' ? '🌊' : disaster === 'Earthquake' ? '🏚️' : '🌪️'}
+                        </div>
+                        <div>{disaster}</div>
+                      </div>
+                    </Button>
+                  ))}
+                </div>
+                <EvacuationRoutes disasterType={selectedDisaster} />
+              </div>
+            </div>
+          </div>
         )}
       </main>
     </div>
