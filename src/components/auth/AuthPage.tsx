@@ -96,24 +96,29 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
       if (authError) {
         setError(authError.message);
       } else if (authData.user) {
-        // Create profile record
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            user_id: authData.user.id,
-            name: signupData.name,
-            school_name: signupData.schoolName,
-            region: signupData.region,
-            roll_no: signupData.rollNo,
-            class_no: signupData.classNo,
-            age_group: signupData.ageGroup,
-            user_role: signupData.userRole
-          });
-
-        if (profileError) {
-          setError('Account created but profile setup failed. Please try logging in.');
+        // Check if email confirmation is required
+        if (!authData.user.email_confirmed_at && !authData.session) {
+          setError('Account created! Please check your email and click the confirmation link to complete signup.');
         } else {
-          onAuthSuccess();
+          // Create profile record
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .insert({
+              user_id: authData.user.id,
+              name: signupData.name,
+              school_name: signupData.schoolName,
+              region: signupData.region,
+              roll_no: signupData.rollNo,
+              class_no: signupData.classNo,
+              age_group: signupData.ageGroup,
+              user_role: signupData.userRole
+            });
+
+          if (profileError) {
+            setError('Account created but profile setup failed. Please try logging in.');
+          } else {
+            onAuthSuccess();
+          }
         }
       }
     } catch (err) {
