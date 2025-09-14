@@ -107,48 +107,48 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
 
   // Initialize audio elements
   useEffect(() => {
-    // Create siren sound using Web Audio API
+    // Create siren sound using Web Audio API (continuous emergency warble)
     const createSirenSound = () => {
       const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
-      let oscillator: OscillatorNode;
-      let gainNode: GainNode;
-      let isPlaying = false;
+      let carrier: OscillatorNode | null = null;
+      let gainNode: GainNode | null = null;
+      let lfo: OscillatorNode | null = null;
+      let isOn = false;
 
-      const startSiren = () => {
-        if (isPlaying) return;
-        isPlaying = true;
-        
-        oscillator = audioContext.createOscillator();
+      const startSiren = async () => {
+        if (isOn) return;
+        isOn = true;
+        await (audioContext as any).resume?.();
+        carrier = audioContext.createOscillator();
         gainNode = audioContext.createGain();
-        
-        oscillator.connect(gainNode);
+        lfo = audioContext.createOscillator();
+        const lfoGain = audioContext.createGain();
+
+        // Base 800Hz, LFO 2Hz modulating +/-300Hz
+        carrier.frequency.value = 800;
+        gainNode.gain.value = 0.18;
+        lfo.frequency.value = 2;
+        lfoGain.gain.value = 300;
+
+        lfo.connect(lfoGain);
+        lfoGain.connect(carrier.frequency);
+        carrier.connect(gainNode);
         gainNode.connect(audioContext.destination);
-        
-        // Emergency siren pattern: alternating high and low tones
-        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
-        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
-        
-        let time = audioContext.currentTime;
-        const duration = 0.5; // Each tone lasts 0.5 seconds
-        
-        for (let i = 0; i < 20; i++) { // 10 seconds of siren
-          oscillator.frequency.setValueAtTime(i % 2 === 0 ? 800 : 1000, time);
-          time += duration;
-        }
-        
-        oscillator.start();
-        oscillator.stop(time);
-        
-        oscillator.onended = () => {
-          isPlaying = false;
-        };
+
+        carrier.start();
+        lfo.start();
       };
 
       const stopSiren = () => {
-        if (oscillator && isPlaying) {
-          oscillator.stop();
-          isPlaying = false;
-        }
+        if (!isOn) return;
+        isOn = false;
+        try { carrier?.stop(); lfo?.stop(); } catch {}
+        carrier?.disconnect();
+        lfo?.disconnect();
+        gainNode?.disconnect();
+        carrier = null;
+        lfo = null;
+        gainNode = null;
       };
 
       return { startSiren, stopSiren };
@@ -166,8 +166,8 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
     let interval: NodeJS.Timeout;
     
     if (isPlaying && currentStep < steps.length) {
-      // Start siren when drill begins
-      if (sirenEnabled && sirenAudioRef.current && currentStep === 0 && progress === 0) {
+      // Start siren whenever drill is playing
+      if (sirenEnabled && sirenAudioRef.current) {
         try {
           (sirenAudioRef.current as any).startSiren();
         } catch (error) {
@@ -211,11 +211,17 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
   }, [isPlaying, currentStep, steps, toast, sirenEnabled, progress]);
 
   const handlePlay = () => {
+    if (sirenEnabled && sirenAudioRef.current) {
+      try { (sirenAudioRef.current as any).startSiren(); } catch {}
+    }
     setIsPlaying(true);
   };
 
   const handlePause = () => {
     setIsPlaying(false);
+    if (sirenAudioRef.current) {
+      try { (sirenAudioRef.current as any).stopSiren(); } catch {}
+    }
   };
 
   const handleReset = () => {

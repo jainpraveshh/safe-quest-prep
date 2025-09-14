@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { AlertTriangle, MapPin, Shield, Lightbulb } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, MapPin, Shield, Lightbulb, Search } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -19,12 +21,14 @@ export const RegionalDisasterAwareness = () => {
   const { profile } = useAuth();
   const [disasters, setDisasters] = useState<RegionalDisaster[]>([]);
   const [loading, setLoading] = useState(true);
+  const [regionQuery, setRegionQuery] = useState<string>('');
 
-  useEffect(() => {
-    if (profile?.region) {
-      fetchRegionalDisasters(profile.region);
-    }
-  }, [profile?.region]);
+useEffect(() => {
+  if (profile?.region) {
+    setRegionQuery(profile.region);
+    fetchRegionalDisasters(profile.region);
+  }
+}, [profile?.region]);
 
   const fetchRegionalDisasters = async (region: string) => {
     try {
@@ -91,14 +95,31 @@ export const RegionalDisasterAwareness = () => {
     );
   }
 
-  return (
-    <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-blue-900">
+return (
+  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50">
+    <CardHeader>
+      <CardTitle className="flex items-center justify-between gap-2 text-blue-900">
+        <span className="flex items-center gap-2">
           <MapPin className="w-5 h-5" />
-          {profile.region} - Regional Disaster Awareness
-        </CardTitle>
-      </CardHeader>
+          {regionQuery || profile.region} - Regional Disaster Awareness
+        </span>
+        <form
+          className="flex items-center gap-2"
+          onSubmit={(e) => { e.preventDefault(); if (regionQuery) { setLoading(true); fetchRegionalDisasters(regionQuery); } }}
+        >
+          <Input
+            placeholder="Enter region (e.g., Delhi, Mumbai)"
+            value={regionQuery}
+            onChange={(e) => setRegionQuery(e.target.value)}
+            className="w-56"
+          />
+          <Button type="submit" variant="outline" size="sm">
+            <Search className="w-4 h-4 mr-1" />
+            Search
+          </Button>
+        </form>
+      </CardTitle>
+    </CardHeader>
       <CardContent className="space-y-4">
         {disasters.length === 0 ? (
           <Alert>

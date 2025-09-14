@@ -43,7 +43,7 @@ serve(async (req) => {
     const { currentLocation, disasterType } = await req.json();
     
     if (!GOOGLE_MAPS_API_KEY) {
-      throw new Error('Google Maps API key not configured');
+      console.log('Google Maps API key not configured - using fallback routing');
     }
 
     console.log(`Finding evacuation routes from ${JSON.stringify(currentLocation)} for ${disasterType}`);
@@ -218,6 +218,20 @@ function getSafeZonesByDisasterType(disasterType: string): Partial<SafeZone>[] {
 
 async function getRouteToSafeZone(origin: any, safeZone: SafeZone): Promise<any> {
   try {
+    if (!GOOGLE_MAPS_API_KEY) {
+      // Fallback when API key missing
+      return {
+        distance: `${safeZone.distance.toFixed(1)} km`,
+        duration: `${Math.ceil(safeZone.distance * 12)} min`,
+        steps: [
+          {
+            instruction: `Head towards ${safeZone.name}`,
+            distance: `${safeZone.distance.toFixed(1)} km`,
+            duration: `${Math.ceil(safeZone.distance * 12)} min`
+          }
+        ]
+      };
+    }
     const url = `https://maps.googleapis.com/maps/api/directions/json?origin=${origin.lat},${origin.lng}&destination=${safeZone.coordinates.lat},${safeZone.coordinates.lng}&mode=walking&key=${GOOGLE_MAPS_API_KEY}`;
     
     const response = await fetch(url);

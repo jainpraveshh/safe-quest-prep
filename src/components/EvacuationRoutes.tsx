@@ -49,6 +49,7 @@ export const EvacuationRoutes: React.FC<EvacuationRoutesProps> = ({ disasterType
   const [currentLocation, setCurrentLocation] = useState<{lat: number, lng: number} | null>(null);
   const [selectedRoute, setSelectedRoute] = useState<EvacuationRoute | null>(null);
   const [locationError, setLocationError] = useState<string>('');
+  const [routeError, setRouteError] = useState<string>('');
 
   const getCurrentLocation = () => {
     setLoading(true);
@@ -80,27 +81,34 @@ export const EvacuationRoutes: React.FC<EvacuationRoutesProps> = ({ disasterType
     );
   };
 
-  const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
-    try {
-      const { data, error } = await supabase.functions.invoke('evacuation-routes', {
-        body: { 
-          currentLocation: location, 
-          disasterType: disasterType 
-        }
-      });
-
-      if (error) {
-        console.error('Error fetching evacuation routes:', error);
-        return;
+const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
+  try {
+    setRouteError('');
+    const { data, error } = await supabase.functions.invoke('evacuation-routes', {
+      body: { 
+        currentLocation: location, 
+        disasterType: disasterType 
       }
+    });
 
-      setRoutes(data.evacuationRoutes || []);
-    } catch (error) {
-      console.error('Error in fetchEvacuationRoutes:', error);
-    } finally {
-      setLoading(false);
+    if (error) {
+      console.error('Error fetching evacuation routes:', error);
+      setRouteError(error.message || 'Failed to fetch routes');
+      return;
     }
-  };
+
+    if (data?.error) {
+      setRouteError(data.error);
+    }
+
+    setRoutes(data?.evacuationRoutes || []);
+  } catch (error: any) {
+    console.error('Error in fetchEvacuationRoutes:', error);
+    setRouteError(error?.message || 'Unexpected error while fetching routes');
+  } finally {
+    setLoading(false);
+  }
+};
 
   const getFacilityIcon = (facility: string) => {
     const icons: { [key: string]: string } = {
@@ -176,6 +184,19 @@ export const EvacuationRoutes: React.FC<EvacuationRoutesProps> = ({ disasterType
                 <MapPin className="w-4 h-4" />
                 Current Location: {currentLocation.lat.toFixed(4)}, {currentLocation.lng.toFixed(4)}
               </div>
+
+              {routeError && (
+                <div className="p-3 border rounded-md bg-warning/10 text-sm">
+                  {routeError.includes('Google Maps API key') ? (
+                    <span>
+                      Google Maps API key not configured. Routes are using a fallback. You can add the key in Supabase Function Secrets.
+                      {' '}<a className="underline" target="_blank" href="https://supabase.com/dashboard/project/fbmlsdftletwtmnxhswk/settings/functions">Open Secrets</a>
+                    </span>
+                  ) : (
+                    <span>{routeError}</span>
+                  )}
+                </div>
+              )}
               
               {loading ? (
                 <div className="space-y-3">

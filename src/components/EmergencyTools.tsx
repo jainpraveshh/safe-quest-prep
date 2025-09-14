@@ -10,12 +10,11 @@ interface EmergencyToolsProps {
 }
 
 const emergencyContacts = [
-  { name: "Emergency Services", number: "911", type: "emergency", description: "Fire, Police, Medical Emergency" },
-  { name: "School Security", number: "(555) 123-4567", type: "school", description: "Campus Security Office" },
-  { name: "School Nurse", number: "(555) 123-4568", type: "medical", description: "Health & Medical Support" },
-  { name: "Principal's Office", number: "(555) 123-4569", type: "admin", description: "Administrative Emergency Line" },
-  { name: "Poison Control", number: "1-800-222-1222", type: "medical", description: "24/7 Poison Information" },
-  { name: "Crisis Hotline", number: "1-800-273-8255", type: "support", description: "Mental Health Crisis Support" },
+  { name: "Police (India)", number: "100", type: "emergency", description: "Immediate police assistance" },
+  { name: "Fire Brigade (India)", number: "101", type: "emergency", description: "Fire emergencies" },
+  { name: "Ambulance (India)", number: "108", type: "medical", description: "Medical emergencies and ambulance" },
+  { name: "Women Helpline", number: "1091", type: "support", description: "Women safety helpline" },
+  { name: "Disaster Management", number: "1077", type: "support", description: "State emergency operations centre" },
 ];
 
 export const EmergencyTools = ({ onBack }: EmergencyToolsProps) => {
