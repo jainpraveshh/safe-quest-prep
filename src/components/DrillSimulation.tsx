@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Play, Pause, RotateCcw, CheckCircle, AlertTriangle } from "lucide-react";
+import { ArrowLeft, Play, Pause, RotateCcw, CheckCircle, AlertTriangle, Volume2, VolumeX } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 interface DrillSimulationProps {
@@ -96,14 +96,85 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
   const [isPlaying, setIsPlaying] = useState(false);
   const [progress, setProgress] = useState(0);
   const [isCompleted, setIsCompleted] = useState(false);
+  const [sirenEnabled, setSirenEnabled] = useState(true);
   const { toast } = useToast();
+  
+  // Audio refs for siren sounds
+  const sirenAudioRef = useRef<HTMLAudioElement | null>(null);
+  const completionAudioRef = useRef<HTMLAudioElement | null>(null);
 
   const steps = drillSteps[disasterType as keyof typeof drillSteps] || drillSteps.earthquake;
+
+  // Initialize audio elements
+  useEffect(() => {
+    // Create siren sound using Web Audio API
+    const createSirenSound = () => {
+      const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+      let oscillator: OscillatorNode;
+      let gainNode: GainNode;
+      let isPlaying = false;
+
+      const startSiren = () => {
+        if (isPlaying) return;
+        isPlaying = true;
+        
+        oscillator = audioContext.createOscillator();
+        gainNode = audioContext.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(audioContext.destination);
+        
+        // Emergency siren pattern: alternating high and low tones
+        oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+        gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+        
+        let time = audioContext.currentTime;
+        const duration = 0.5; // Each tone lasts 0.5 seconds
+        
+        for (let i = 0; i < 20; i++) { // 10 seconds of siren
+          oscillator.frequency.setValueAtTime(i % 2 === 0 ? 800 : 1000, time);
+          time += duration;
+        }
+        
+        oscillator.start();
+        oscillator.stop(time);
+        
+        oscillator.onended = () => {
+          isPlaying = false;
+        };
+      };
+
+      const stopSiren = () => {
+        if (oscillator && isPlaying) {
+          oscillator.stop();
+          isPlaying = false;
+        }
+      };
+
+      return { startSiren, stopSiren };
+    };
+
+    try {
+      const siren = createSirenSound();
+      sirenAudioRef.current = siren as any;
+    } catch (error) {
+      console.log('Audio context not supported');
+    }
+  }, []);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
     if (isPlaying && currentStep < steps.length) {
+      // Start siren when drill begins
+      if (sirenEnabled && sirenAudioRef.current && currentStep === 0 && progress === 0) {
+        try {
+          (sirenAudioRef.current as any).startSiren();
+        } catch (error) {
+          console.log('Could not play siren sound');
+        }
+      }
+      
       const step = steps[currentStep];
       interval = setInterval(() => {
         setProgress((prev) => {
@@ -116,6 +187,14 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
                 setProgress(0);
               }, 500);
             } else {
+              // Stop siren when drill completes
+              if (sirenEnabled && sirenAudioRef.current) {
+                try {
+                  (sirenAudioRef.current as any).stopSiren();
+                } catch (error) {
+                  console.log('Could not stop siren sound');
+                }
+              }
               setIsCompleted(true);
               toast({
                 title: "Drill Complete!",
@@ -129,7 +208,7 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
     }
 
     return () => clearInterval(interval);
-  }, [isPlaying, currentStep, steps, toast]);
+  }, [isPlaying, currentStep, steps, toast, sirenEnabled, progress]);
 
   const handlePlay = () => {
     setIsPlaying(true);
@@ -140,10 +219,37 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
   };
 
   const handleReset = () => {
+    // Stop siren when resetting
+    if (sirenEnabled && sirenAudioRef.current) {
+      try {
+        (sirenAudioRef.current as any).stopSiren();
+      } catch (error) {
+        console.log('Could not stop siren sound');
+      }
+    }
     setCurrentStep(0);
     setProgress(0);
     setIsPlaying(false);
     setIsCompleted(false);
+  };
+
+  const toggleSiren = () => {
+    setSirenEnabled(!sirenEnabled);
+    if (!sirenEnabled && sirenAudioRef.current && isPlaying) {
+      // Start siren if enabling during active drill
+      try {
+        (sirenAudioRef.current as any).startSiren();
+      } catch (error) {
+        console.log('Could not start siren sound');
+      }
+    } else if (sirenEnabled && sirenAudioRef.current) {
+      // Stop siren if disabling
+      try {
+        (sirenAudioRef.current as any).stopSiren();
+      } catch (error) {
+        console.log('Could not stop siren sound');
+      }
+    }
   };
 
   const handleComplete = () => {
@@ -243,13 +349,31 @@ export const DrillSimulation = ({ disasterType, onBack, onComplete }: DrillSimul
                       Reset
                     </Button>
                     
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={toggleSiren}
+                      className={`${isPlaying && sirenEnabled ? 'animate-siren-flash' : ''}`}
+                    >
+                      {sirenEnabled ? (
+                        <Volume2 className="h-4 w-4 mr-2" />
+                      ) : (
+                        <VolumeX className="h-4 w-4 mr-2" />
+                      )}
+                      Siren {sirenEnabled ? 'On' : 'Off'}
+                    </Button>
+                    
                     {!isPlaying ? (
-                      <Button onClick={handlePlay} size="lg">
+                      <Button 
+                        onClick={handlePlay} 
+                        size="lg"
+                        className={`${currentStep === 0 && progress === 0 ? 'bg-emergency hover:bg-emergency/90 animate-emergency-pulse' : ''}`}
+                      >
                         <Play className="h-4 w-4 mr-2" />
                         {currentStep === 0 && progress === 0 ? 'Start Drill' : 'Continue'}
                       </Button>
                     ) : (
-                      <Button variant="secondary" onClick={handlePause} size="lg">
+                      <Button variant="secondary" onClick={handlePause} size="lg" className="animate-drill-active">
                         <Pause className="h-4 w-4 mr-2" />
                         Pause
                       </Button>

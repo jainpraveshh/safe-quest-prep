@@ -47,7 +47,7 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        // Alert-Driven Disaster Colors
+        // Enhanced Alert-Driven Disaster Colors
         emergency: {
           DEFAULT: "hsl(var(--emergency))",
           foreground: "hsl(var(--emergency-foreground))",
@@ -60,11 +60,29 @@ export default {
           DEFAULT: "hsl(var(--success))",
           foreground: "hsl(var(--success-foreground))",
         },
-        // Gamification Colors
+        // Disaster-Specific Colors
+        flood: {
+          DEFAULT: "hsl(var(--flood))",
+          foreground: "hsl(var(--flood-foreground))",
+        },
+        earthquake: {
+          DEFAULT: "hsl(var(--earthquake))",
+          foreground: "hsl(var(--earthquake-foreground))",
+        },
+        cyclone: {
+          DEFAULT: "hsl(var(--cyclone))",
+          foreground: "hsl(var(--cyclone-foreground))",
+        },
+        fire: {
+          DEFAULT: "hsl(var(--fire))",
+          foreground: "hsl(var(--fire-foreground))",
+        },
+        // Enhanced Gamification Colors
         badge: {
           gold: "hsl(var(--badge-gold))",
           silver: "hsl(var(--badge-silver))",
           bronze: "hsl(var(--badge-bronze))",
+          sparkle: "hsl(var(--achievement-sparkle))",
         },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
@@ -82,11 +100,17 @@ export default {
         'fire': 'var(--fire-gradient)',
         'flood': 'var(--flood-gradient)',
         'cyclone': 'var(--cyclone-gradient)',
+        'emergency-pulse': 'var(--emergency-pulse)',
+        'alert-glow': 'var(--alert-glow)',
+        'safe-zone': 'var(--safe-zone)',
       },
       boxShadow: {
         'card': 'var(--shadow-card)',
         'emergency': 'var(--shadow-emergency)',
         'success': 'var(--shadow-success)',
+        'warning': 'var(--shadow-warning)',
+        'drill': 'var(--shadow-drill)',
+        'pulse-ring': 'var(--pulse-ring)',
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -110,10 +134,26 @@ export default {
             height: "0",
           },
         },
+        "siren-flash": {
+          "0%, 50%": { backgroundColor: "hsl(var(--siren-red))" },
+          "25%, 75%": { backgroundColor: "hsl(var(--siren-blue))" },
+        },
+        "emergency-pulse": {
+          "0%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsla(0, 88%, 58%, 0.7)" },
+          "70%": { transform: "scale(1.05)", boxShadow: "0 0 0 10px hsla(0, 88%, 58%, 0)" },
+          "100%": { transform: "scale(1)", boxShadow: "0 0 0 0 hsla(0, 88%, 58%, 0)" },
+        },
+        "drill-active": {
+          "0%, 100%": { borderColor: "hsl(var(--emergency))" },
+          "50%": { borderColor: "hsl(var(--warning))" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "siren-flash": "siren-flash 1s infinite",
+        "emergency-pulse": "emergency-pulse 2s infinite",
+        "drill-active": "drill-active 1.5s infinite",
       },
     },
   },

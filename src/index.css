@@ -2,12 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Disaster Preparedness App Design System - Bright, Alert-Driven Colors */
+/* EduShield Disaster Preparedness - Enhanced Alert-Driven Design System */
 
 @layer base {
   :root {
-    /* Base Theme - Clean & Professional */
-    --background: 210 20% 98%;
+    /* Base Theme - Professional with Emergency Undertones */
+    --background: 220 15% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -16,18 +16,31 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    /* Alert-Driven Color System */
-    --primary: 220 91% 52%; /* Trust Blue - Safety Info */
+    /* Enhanced Alert-Driven Color System */
+    --primary: 220 85% 58%; /* Enhanced Trust Blue - Safety Info */
     --primary-foreground: 0 0% 100%;
 
-    --emergency: 0 84% 60%; /* Urgent Red - SOS, Fire */
+    --emergency: 0 88% 58%; /* Intensified Red - SOS, Fire */
     --emergency-foreground: 0 0% 100%;
 
-    --warning: 25 95% 53%; /* Alert Orange - Warnings */
+    --warning: 28 90% 55%; /* Bright Alert Orange - Warnings */
     --warning-foreground: 0 0% 100%;
 
-    --success: 142 76% 36%; /* Safety Green - Completion */
+    --success: 140 80% 40%; /* Vibrant Safety Green - Completion */
     --success-foreground: 0 0% 100%;
+
+    /* New Disaster-Specific Colors */
+    --flood: 200 95% 50%; /* Deep Water Blue */
+    --flood-foreground: 0 0% 100%;
+    
+    --earthquake: 30 85% 55%; /* Earth Brown-Orange */
+    --earthquake-foreground: 0 0% 100%;
+    
+    --cyclone: 240 60% 65%; /* Storm Purple-Gray */
+    --cyclone-foreground: 0 0% 100%;
+    
+    --fire: 15 100% 60%; /* Intense Fire Red-Orange */
+    --fire-foreground: 0 0% 100%;
 
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -45,22 +58,35 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 220 91% 52%;
 
-    /* Disaster-Specific Gradients */
-    --earthquake-gradient: linear-gradient(135deg, 30 80% 50%, 15 85% 55%);
-    --fire-gradient: linear-gradient(135deg, 0 84% 60%, 25 95% 53%);
-    --flood-gradient: linear-gradient(135deg, 220 91% 52%, 200 95% 45%);
-    --cyclone-gradient: linear-gradient(135deg, 240 15% 65%, 220 25% 40%);
+    /* Enhanced Disaster-Specific Gradients */
+    --earthquake-gradient: linear-gradient(135deg, hsl(30 85% 55%), hsl(20 90% 60%));
+    --fire-gradient: linear-gradient(135deg, hsl(15 100% 60%), hsl(0 88% 58%));
+    --flood-gradient: linear-gradient(135deg, hsl(200 95% 50%), hsl(220 85% 58%));
+    --cyclone-gradient: linear-gradient(135deg, hsl(240 60% 65%), hsl(220 45% 50%));
+    
+    /* Emergency Action Gradients */
+    --emergency-pulse: linear-gradient(135deg, hsl(0 88% 58%), hsl(15 100% 60%));
+    --alert-glow: linear-gradient(135deg, hsl(28 90% 55%), hsl(45 100% 50%));
+    --safe-zone: linear-gradient(135deg, hsl(140 80% 40%), hsl(120 75% 45%));
 
-    /* Gamification Colors */
-    --badge-gold: 45 100% 50%;
-    --badge-silver: 0 0% 75%;
-    --badge-bronze: 25 75% 47%;
-    --points-glow: 60 100% 50%;
+    /* Enhanced Gamification Colors */
+    --badge-gold: 45 100% 55%;
+    --badge-silver: 220 10% 80%;
+    --badge-bronze: 25 80% 50%;
+    --points-glow: 60 100% 55%;
+    --achievement-sparkle: 280 100% 70%;
 
-    /* Shadows & Effects */
-    --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-emergency: 0 10px 25px -5px hsla(0, 84%, 60%, 0.4);
-    --shadow-success: 0 10px 25px -5px hsla(142, 76%, 36%, 0.3);
+    /* Enhanced Shadows & Effects */
+    --shadow-card: 0 8px 16px -4px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.08);
+    --shadow-emergency: 0 12px 30px -8px hsla(0, 88%, 58%, 0.5);
+    --shadow-success: 0 12px 30px -8px hsla(140, 80%, 40%, 0.4);
+    --shadow-warning: 0 12px 30px -8px hsla(28, 90%, 55%, 0.4);
+    --shadow-drill: 0 0 40px hsla(220, 85%, 58%, 0.3);
+    
+    /* Siren & Alert Effects */
+    --siren-red: 0 100% 60%;
+    --siren-blue: 220 100% 60%;
+    --pulse-ring: 0 0 0 4px hsla(0, 88%, 58%, 0.3);
 
     --radius: 12px;
 
