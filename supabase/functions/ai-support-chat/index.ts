@@ -74,14 +74,24 @@ Always provide helpful, clear, and safety-focused responses. Be encouraging and 
     );
   } catch (error) {
     console.error('Error in ai-support-chat function:', error);
+
+    // Offline fallback response (no OpenAI required)
+    const fallback = [
+      "I'm here to help with disaster preparedness. Here are quick tips:",
+      "• Earthquake: Drop, Cover, Hold. Stay away from windows. Evacuate when shaking stops.",
+      "• Fire: Stay low, check doors with the back of your hand, never use elevators, meet at assembly point.",
+      "• Flood: Move to higher ground, avoid walking/driving through floodwaters, switch off electricity.",
+      "• Cyclone: Shelter in an interior room, stay away from glass, wait for official all‑clear.",
+      "Need evacuation routes? Open the Routes section and select a disaster type. For alerts, go to Live Disaster Alerts."
+    ].join('\n');
+
     return new Response(
       JSON.stringify({ 
-        error: error.message,
-        response: "I'm sorry, I'm having trouble connecting right now. Please try again in a moment or contact your teacher for help.",
+        response: fallback,
+        note: 'Served by offline fallback due to AI service issue',
         timestamp: new Date().toISOString()
       }),
       {
-        status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );

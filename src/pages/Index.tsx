@@ -114,7 +114,7 @@ const Index = () => {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={() => setCurrentScreen('evacuationRoutes')}
+                onClick={() => { setSelectedDisaster('Flood'); setCurrentScreen('evacuationRoutes'); }}
                 className="flex items-center gap-2"
               >
                 <Navigation className="w-4 h-4" />

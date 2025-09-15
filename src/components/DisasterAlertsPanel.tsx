@@ -29,22 +29,23 @@ export const DisasterAlertsPanel: React.FC = () => {
   const { profile } = useAuth();
 
   const fetchAlerts = async () => {
-    if (!profile?.region) return;
-    
+    const region = profile?.region || 'Delhi';
     try {
       setRefreshing(true);
       const { data, error } = await supabase.functions.invoke('disaster-alerts', {
-        body: { region: profile.region }
+        body: { region }
       });
 
       if (error) {
         console.error('Error fetching disaster alerts:', error);
+        setAlertsData({ alerts: [], lastUpdated: new Date().toISOString(), region });
         return;
       }
 
-      setAlertsData(data);
+      setAlertsData(data as AlertsData);
     } catch (error) {
       console.error('Error in fetchAlerts:', error);
+      setAlertsData({ alerts: [], lastUpdated: new Date().toISOString(), region });
     } finally {
       setLoading(false);
       setRefreshing(false);
