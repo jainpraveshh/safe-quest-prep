@@ -11,12 +11,14 @@ import { DrillSimulation } from "@/components/DrillSimulation";
 import { RegionalDisasterAwareness } from "@/components/RegionalDisasterAwareness";
 import { DisasterAlertsPanel } from "@/components/DisasterAlertsPanel";
 import { EvacuationRoutes } from "@/components/EvacuationRoutes";
+import { PostDrillQuiz } from "@/components/PostDrillQuiz";
+import { AIChatbot } from "@/components/AIChatbot";
 import { Home, Users, UserCog, AlertCircle, LogOut, MapPin, Navigation } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { user, loading, signOut } = useAuth();
-  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness' | 'liveAlerts' | 'evacuationRoutes';
+  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness' | 'liveAlerts' | 'evacuationRoutes' | 'postDrillQuiz';
   
   const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
   const [selectedDisaster, setSelectedDisaster] = useState<string>('');
@@ -33,6 +35,15 @@ const Index = () => {
     } else {
       setCurrentScreen('quiz');
     }
+  };
+
+  const handleDrillComplete = () => {
+    setCurrentScreen('postDrillQuiz');
+  };
+
+  const handleQuizComplete = (score: number) => {
+    console.log(`Quiz completed with score: ${score}%`);
+    setCurrentScreen('studentDashboard');
   };
 
   const handleAuthSuccess = () => {
@@ -186,8 +197,20 @@ const Index = () => {
           <DrillSimulation 
             disasterType={selectedDisaster}
             onBack={() => setCurrentScreen('disasters')}
-            onComplete={() => setCurrentScreen('studentDashboard')}
+            onComplete={handleDrillComplete}
           />
+        )}
+        
+        {currentScreen === 'postDrillQuiz' && (
+          <div className="pt-20 px-4">
+            <div className="max-w-4xl mx-auto">
+              <PostDrillQuiz 
+                disasterType={selectedDisaster}
+                onComplete={handleQuizComplete}
+                onSkip={() => setCurrentScreen('studentDashboard')}
+              />
+            </div>
+          </div>
         )}
         
         {currentScreen === 'liveAlerts' && (
@@ -251,6 +274,9 @@ const Index = () => {
           </div>
         )}
       </main>
+      
+      {/* AI Chatbot - always visible when user is logged in */}
+      <AIChatbot />
     </div>
   );
 };

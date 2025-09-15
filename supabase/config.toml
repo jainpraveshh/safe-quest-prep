@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.evacuation-routes]
 verify_jwt = false
+
+[functions.ai-support-chat]
+verify_jwt = false
