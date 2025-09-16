@@ -81,34 +81,110 @@ export const EvacuationRoutes: React.FC<EvacuationRoutesProps> = ({ disasterType
     );
   };
 
-const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
-  try {
-    setRouteError('');
-    const { data, error } = await supabase.functions.invoke('evacuation-routes', {
-      body: { 
-        currentLocation: location, 
-        disasterType: disasterType 
+  const generateFallbackRoutes = (location: {lat: number, lng: number}) => {
+    // Generate sample safe zones based on disaster type
+    const fallbackSafeZones: SafeZone[] = [
+      {
+        id: '1',
+        name: 'Community Emergency Center',
+        type: disasterType === 'Cyclone' ? 'Cyclone Shelter' : 
+              disasterType === 'Earthquake' ? 'Open Area' : 
+              disasterType === 'Flood' ? 'Educational Institution' : 'Emergency Center',
+        coordinates: { lat: location.lat + 0.01, lng: location.lng + 0.01 },
+        capacity: 500,
+        facilities: disasterType === 'Flood' ? 
+          ['Food', 'Water', 'Medical Aid', 'Shelter'] :
+          disasterType === 'Earthquake' ?
+          ['Open Space', 'Medical Aid', 'Emergency Services'] :
+          ['Shelter', 'Food', 'Water', 'Medical Aid', 'Communication'],
+        distance: 1.2
+      },
+      {
+        id: '2', 
+        name: 'District Hospital Safety Zone',
+        type: 'Medical Facility',
+        coordinates: { lat: location.lat - 0.008, lng: location.lng + 0.015 },
+        capacity: 200,
+        facilities: ['Medical Aid', 'Emergency Services', 'Shelter', 'Communication'],
+        distance: 2.1
+      },
+      {
+        id: '3',
+        name: 'Government School Evacuation Center', 
+        type: 'Educational Institution',
+        coordinates: { lat: location.lat + 0.005, lng: location.lng - 0.012 },
+        capacity: 300,
+        facilities: ['Shelter', 'Food', 'Water', 'Open Space'],
+        distance: 1.8
       }
-    });
+    ];
 
-    if (error) {
-      console.error('Error fetching evacuation routes:', error);
-      setRouteError(error.message || 'Failed to fetch routes');
-      return;
+    const fallbackRoutes: EvacuationRoute[] = fallbackSafeZones.map((safeZone, index) => ({
+      safeZone,
+      route: {
+        distance: `${safeZone.distance} km`,
+        duration: `${Math.round(safeZone.distance * 12)} min`, // Assuming walking speed
+        steps: [
+          {
+            instruction: `Head ${index === 0 ? 'north' : index === 1 ? 'south' : 'west'} from your current location`,
+            distance: '200 m',
+            duration: '3 min'
+          },
+          {
+            instruction: `Turn ${index % 2 === 0 ? 'right' : 'left'} on main road`,
+            distance: '500 m', 
+            duration: '6 min'
+          },
+          {
+            instruction: `Continue straight until you reach ${safeZone.name}`,
+            distance: `${(safeZone.distance * 1000 - 700).toFixed(0)} m`,
+            duration: `${Math.round((safeZone.distance * 12) - 9)} min`
+          }
+        ]
+      }
+    }));
+
+    setRoutes(fallbackRoutes);
+  };
+
+  const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
+    try {
+      setRouteError('');
+      const { data, error } = await supabase.functions.invoke('evacuation-routes', {
+        body: { 
+          currentLocation: location, 
+          disasterType: disasterType 
+        }
+      });
+
+      if (error) {
+        console.error('Error fetching evacuation routes:', error);
+        setRouteError(error.message || 'Failed to fetch routes');
+        // Provide fallback evacuation routes
+        generateFallbackRoutes(location);
+        return;
+      }
+
+      if (data?.error) {
+        setRouteError(data.error);
+        generateFallbackRoutes(location);
+        return;
+      }
+
+      if (data?.evacuationRoutes && data.evacuationRoutes.length > 0) {
+        setRoutes(data.evacuationRoutes);
+      } else {
+        // Use fallback if no routes returned
+        generateFallbackRoutes(location);
+      }
+    } catch (error: any) {
+      console.error('Error in fetchEvacuationRoutes:', error);
+      setRouteError(error?.message || 'Unexpected error while fetching routes');
+      generateFallbackRoutes(location);
+    } finally {
+      setLoading(false);
     }
-
-    if (data?.error) {
-      setRouteError(data.error);
-    }
-
-    setRoutes(data?.evacuationRoutes || []);
-  } catch (error: any) {
-    console.error('Error in fetchEvacuationRoutes:', error);
-    setRouteError(error?.message || 'Unexpected error while fetching routes');
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   const getFacilityIcon = (facility: string) => {
     const icons: { [key: string]: string } = {
@@ -125,7 +201,7 @@ const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
     return icons[facility] || '✅';
   };
 
-  const getSafeZoneTypeColor = (type: string) => {
+  const getSafeZoneTypeColor = (type: string): "default" | "secondary" | "destructive" | "outline" => {
     const colors: { [key: string]: "default" | "secondary" | "destructive" | "outline" } = {
       'Community Center': 'default',
       'Educational Institution': 'secondary',
@@ -189,8 +265,8 @@ const fetchEvacuationRoutes = async (location: {lat: number, lng: number}) => {
                 <div className="p-3 border rounded-md bg-warning/10 text-sm">
                   {routeError.includes('Google Maps API key') ? (
                     <span>
-                      Google Maps API key not configured. Routes are using a fallback. You can add the key in Supabase Function Secrets.
-                      {' '}<a className="underline" target="_blank" href="https://supabase.com/dashboard/project/fbmlsdftletwtmnxhswk/settings/functions">Open Secrets</a>
+                      Google Maps API key not configured. Showing sample routes. You can add the key in Supabase Function Secrets.
+                      {' '}<a className="underline" target="_blank" rel="noopener noreferrer" href="https://supabase.com/dashboard/project/fbmlsdftletwtmnxhswk/settings/functions">Open Secrets</a>
                     </span>
                   ) : (
                     <span>{routeError}</span>

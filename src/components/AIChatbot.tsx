@@ -55,7 +55,41 @@ export const AIChatbot: React.FC = () => {
       });
 
       if (error) {
-        throw error;
+        console.error('Error sending message:', error);
+        
+        // Provide helpful emergency tips as fallback
+        const fallbackTips = {
+          'earthquake': 'During an earthquake: DROP to hands and knees, take COVER under a sturdy desk/table, HOLD ON until shaking stops. Stay away from windows and heavy objects.',
+          'fire': 'During a fire: Stay low to avoid smoke, check doors before opening (use back of hand), have 2 escape routes planned, never use elevators.',
+          'flood': 'During floods: Move to higher ground immediately, avoid walking/driving through flood water, listen to emergency broadcasts, stay away from electrical lines.',
+          'cyclone': 'During cyclones: Stay indoors away from windows, have emergency supplies ready, listen to weather updates, avoid going outside until all-clear is given.',
+          'general': 'Key safety tips: Have an emergency kit ready, know your evacuation routes, stay informed through official channels, practice safety drills regularly.'
+        };
+        
+        let responseContent = 'I\'m currently offline, but here are some key safety tips:\n\n';
+        
+        const userQuery = userMessage.content.toLowerCase();
+        if (userQuery.includes('earthquake')) {
+          responseContent += fallbackTips.earthquake;
+        } else if (userQuery.includes('fire')) {
+          responseContent += fallbackTips.fire;
+        } else if (userQuery.includes('flood')) {
+          responseContent += fallbackTips.flood;
+        } else if (userQuery.includes('cyclone')) {
+          responseContent += fallbackTips.cyclone;
+        } else {
+          responseContent += fallbackTips.general;
+        }
+        
+        responseContent += '\n\nFor immediate emergencies, dial:\n🚨 Police: 100\n🚑 Ambulance: 108\n🔥 Fire: 101';
+        
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          type: 'ai',
+          content: responseContent,
+          timestamp: new Date()
+        };
+        setMessages(prev => [...prev, errorMessage]);
       }
 
       const aiMessage: Message = {
@@ -68,13 +102,7 @@ export const AIChatbot: React.FC = () => {
       setMessages(prev => [...prev, aiMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        type: 'ai',
-        content: 'Sorry, I\'m having trouble connecting right now. Please try again in a moment.',
-        timestamp: new Date()
-      };
-      setMessages(prev => [...prev, errorMessage]);
+      // This is now handled in the if (error) block above
     } finally {
       setIsLoading(false);
     }
