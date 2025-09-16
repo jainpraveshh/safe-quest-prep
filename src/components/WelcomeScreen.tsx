@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Shield, Users, Award, AlertTriangle } from "lucide-react";
 import heroImage from "@/assets/hero-students.jpg";
+import edushieldLogo from "@/assets/edushield-logo.png";
 
 interface WelcomeScreenProps {
   onGetStarted: () => void;
@@ -14,17 +15,17 @@ export const WelcomeScreen = ({ onGetStarted }: WelcomeScreenProps) => {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center mb-4">
-            <Shield className="h-12 w-12 text-primary mr-3" />
+            <img src={edushieldLogo} alt="EduShield Logo" className="h-12 w-12 mr-3" />
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-to-r from-primary to-success bg-clip-text text-transparent">
-              SafeLearn
+              EduShield
             </h1>
           </div>
           <p className="text-xl md:text-2xl font-semibold text-foreground/80 mb-2">
-            Learn. Prepare. Stay Safe.
+            Master Disaster Safety. Protect Your Future.
           </p>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Master disaster preparedness through interactive simulations, engaging quizzes, 
-            and gamified learning designed specifically for students.
+            and gamified learning designed specifically for Indian students and schools.
           </p>
         </div>
 
@@ -63,7 +64,7 @@ export const WelcomeScreen = ({ onGetStarted }: WelcomeScreenProps) => {
           <Button 
             onClick={onGetStarted}
             size="lg"
-            className="bg-gradient-to-r from-primary to-success hover:from-primary/90 hover:to-success/90 text-white font-semibold px-12 py-6 text-xl rounded-full shadow-card hover:shadow-success transition-all duration-300 hover:scale-105"
+            className="bg-gradient-to-r from-emergency to-warning hover:from-emergency/90 hover:to-warning/90 text-white font-semibold px-12 py-6 text-xl rounded-full shadow-emergency hover:shadow-success transition-all duration-300 hover:scale-105"
           >
             Start Learning Now
           </Button>

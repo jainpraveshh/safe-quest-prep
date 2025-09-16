@@ -135,8 +135,8 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
           <div className="flex justify-center mb-4">
             <Shield className="h-12 w-12 text-emerald-600" />
           </div>
-          <CardTitle className="text-2xl font-bold text-gray-900">SafeLearn India</CardTitle>
-          <CardDescription>Disaster Preparedness Education Platform</CardDescription>
+          <CardTitle className="text-2xl font-bold text-gray-900">EduShield</CardTitle>
+          <CardDescription>Disaster Preparedness Education for India</CardDescription>
         </CardHeader>
         
         <CardContent>

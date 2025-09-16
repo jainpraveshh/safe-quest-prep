@@ -14,6 +14,7 @@ import { EvacuationRoutes } from "@/components/EvacuationRoutes";
 import { PostDrillQuiz } from "@/components/PostDrillQuiz";
 import { AIChatbot } from "@/components/AIChatbot";
 import { Home, Users, UserCog, AlertCircle, LogOut, MapPin, Navigation } from "lucide-react";
+import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { Button } from "@/components/ui/button";
 
 const Index = () => {
@@ -50,14 +51,10 @@ const Index = () => {
     setCurrentScreen('welcome');
   };
 
-  // Show loading spinner while checking auth
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-indigo-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-500"></div>
-      </div>
-    );
-  }
+      {/* Show loading spinner while checking auth */}
+      if (loading) {
+        return <LoadingSpinner variant="page" message="Initializing EduShield..." />;
+      }
 
   // Show auth page if not logged in
   if (!user) {
