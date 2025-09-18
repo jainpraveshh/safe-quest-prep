@@ -8,6 +8,7 @@ import { MiddleSchoolUI } from "@/components/age-groups/MiddleSchoolUI";
 import { HighSchoolUI } from "@/components/age-groups/HighSchoolUI";
 import { AdultsUI } from "@/components/age-groups/AdultsUI";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
   const { user, profile, loading } = useAuth();
@@ -45,9 +46,24 @@ const Index = () => {
     return <LoadingSpinner variant="page" message="Initializing EduShield..." />;
   }
 
-  // Show auth page if not logged in
+  // Show auth page if not logged in - redirect to login
   if (!user) {
-    return <AuthPage onAuthSuccess={handleAuthSuccess} />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-emerald-50 via-blue-50 to-indigo-50 flex items-center justify-center p-4">
+        <div className="text-center">
+          <h1 className="text-4xl font-bold mb-4 text-gray-900">Welcome to EduShield</h1>
+          <p className="text-lg text-gray-600 mb-8">Disaster Preparedness Education for India</p>
+          <div className="space-x-4">
+            <Button onClick={() => window.location.href = '/login'} size="lg">
+              Login
+            </Button>
+            <Button onClick={() => window.location.href = '/signup'} variant="outline" size="lg">
+              Sign Up
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Show emergency mode if activated

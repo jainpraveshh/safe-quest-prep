@@ -10,6 +10,7 @@ import { EvacuationRoutes } from '@/components/EvacuationRoutes';
 import { DrillSimulation } from '@/components/DrillSimulation';
 import { AchievementSystem } from '@/components/AchievementSystem';
 import { DisasterContentCard } from '@/components/DisasterContentCard';
+import { AnimatedVideoCard } from '@/components/AnimatedVideoCard';
 import { disasterData } from '@/data/disasterContent';
 
 interface KidsUIProps {
@@ -60,6 +61,48 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
             <CardContent className="p-4 text-center">
               <Trophy className="h-8 w-8 text-pink-600 mx-auto mb-2" />
               <p className="font-bold text-pink-800">{badges.length} Badges!</p>
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Animated Videos Section for Kids */}
+        <div className="mb-8">
+          <Card className="bg-gradient-to-r from-purple-200 to-pink-200 border-4 border-white shadow-xl">
+            <CardHeader className="text-center">
+              <CardTitle className="text-3xl font-bold text-gray-800">
+                🎬 Safety Videos with Sally!
+              </CardTitle>
+              <p className="text-lg text-gray-700 font-medium">
+                Watch fun animations to learn safety steps!
+              </p>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <AnimatedVideoCard
+                  title="🚒 Fire Safety Fun"
+                  description="Learn how to stay safe during fires with Firefighter Fox!"
+                  videoSrc="/videos/fire-safety-kids.mp4"
+                  thumbnail="/images/fire-safety-thumb.jpg"
+                />
+                <AnimatedVideoCard
+                  title="🌊 Flood Safety Adventure"
+                  description="Discover flood safety with Captain Boat Bear!"
+                  videoSrc="/videos/flood-safety-kids.mp4"
+                  thumbnail="/images/flood-safety-thumb.jpg"
+                />
+                <AnimatedVideoCard
+                  title="🏠 Earthquake Hero"
+                  description="Practice Drop, Cover, Hold with Earthquake Elephant!"
+                  videoSrc="/videos/earthquake-safety-kids.mp4"
+                  thumbnail="/images/earthquake-safety-thumb.jpg"
+                />
+                <AnimatedVideoCard
+                  title="🌪️ Cyclone Champion"
+                  description="Learn cyclone safety with Whirlwind Whale!"
+                  videoSrc="/videos/cyclone-safety-kids.mp4"
+                  thumbnail="/images/cyclone-safety-thumb.jpg"
+                />
+              </div>
             </CardContent>
           </Card>
         </div>
