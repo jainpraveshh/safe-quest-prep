@@ -1,281 +1,100 @@
 import { useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useAgeGroup, AgeGroup } from "@/contexts/AgeGroupContext";
 import { AuthPage } from "@/components/auth/AuthPage";
-import { WelcomeScreen } from "@/components/WelcomeScreen";
-import { DisasterSelection } from "@/components/DisasterSelection";
-import { QuizComponent } from "@/components/QuizComponent";
-import { StudentDashboard } from "@/components/StudentDashboard";
-import { AdminDashboard } from "@/components/AdminDashboard";
-import { EmergencyTools } from "@/components/EmergencyTools";
-import { DrillSimulation } from "@/components/DrillSimulation";
-import { RegionalDisasterAwareness } from "@/components/RegionalDisasterAwareness";
-import { DisasterAlertsPanel } from "@/components/DisasterAlertsPanel";
-import { EvacuationRoutes } from "@/components/EvacuationRoutes";
-import { PostDrillQuiz } from "@/components/PostDrillQuiz";
-import { AIChatbot } from "@/components/AIChatbot";
-import { Home, Users, UserCog, AlertCircle, LogOut, MapPin, Navigation } from "lucide-react";
+import { AgeSelectionLanding } from "@/components/AgeSelectionLanding";
+import { KidsUI } from "@/components/age-groups/KidsUI";
+import { MiddleSchoolUI } from "@/components/age-groups/MiddleSchoolUI";
+import { HighSchoolUI } from "@/components/age-groups/HighSchoolUI";
+import { AdultsUI } from "@/components/age-groups/AdultsUI";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { Button } from "@/components/ui/button";
 
 const Index = () => {
-  const { user, loading, signOut } = useAuth();
-  type Screen = 'welcome' | 'disasters' | 'quiz' | 'studentDashboard' | 'adminDashboard' | 'emergencyTools' | 'drill' | 'regionalAwareness' | 'liveAlerts' | 'evacuationRoutes' | 'postDrillQuiz';
-  
-  const [currentScreen, setCurrentScreen] = useState<Screen>('welcome');
-  const [selectedDisaster, setSelectedDisaster] = useState<string>('');
+  const { user, loading } = useAuth();
+  const { ageGroup, setAgeGroup } = useAgeGroup();
+  const [showEmergency, setShowEmergency] = useState(false);
 
-  const navigateToScreen = (screen: Screen) => {
-    setCurrentScreen(screen);
+  const handleAgeSelect = (age: AgeGroup) => {
+    setAgeGroup(age);
   };
 
-  const handleDisasterSelect = (disasterType: string) => {
-    setSelectedDisaster(disasterType);
-    // Navigate to quiz for most disasters, drill for specific ones
-    if (disasterType.includes('drill')) {
-      setCurrentScreen('drill');
-    } else {
-      setCurrentScreen('quiz');
-    }
-  };
-
-  const handleDrillComplete = () => {
-    setCurrentScreen('postDrillQuiz');
-  };
-
-  const handleQuizComplete = (score: number) => {
-    console.log(`Quiz completed with score: ${score}%`);
-    setCurrentScreen('studentDashboard');
+  const handleBackToAgeSelection = () => {
+    setAgeGroup(null);
   };
 
   const handleAuthSuccess = () => {
-    setCurrentScreen('welcome');
+    // Auth success handled automatically by state
   };
 
-      {/* Show loading spinner while checking auth */}
-      if (loading) {
-        return <LoadingSpinner variant="page" message="Initializing EduShield..." />;
-      }
+  // Show loading spinner while checking auth
+  if (loading) {
+    return <LoadingSpinner variant="page" message="Initializing EduShield..." />;
+  }
 
   // Show auth page if not logged in
   if (!user) {
     return <AuthPage onAuthSuccess={handleAuthSuccess} />;
   }
 
-  const NavigationBar = () => {
-    if (currentScreen === 'welcome') return null;
-    
+  // Show emergency mode if activated
+  if (showEmergency) {
     return (
-      <nav className="fixed top-0 left-0 right-0 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
-        <div className="max-w-7xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setCurrentScreen('welcome')}
-              className="flex items-center gap-2"
-            >
-              <Home className="w-4 h-4" />
-              EduShield
-            </Button>
-            
-            <div className="flex items-center gap-2">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentScreen('studentDashboard')}
-                className="flex items-center gap-2"
-              >
-                <Users className="w-4 h-4" />
-                Dashboard
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentScreen('regionalAwareness')}
-                className="flex items-center gap-2"
-              >
-                <MapPin className="w-4 h-4" />
-                Regional Alerts
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentScreen('liveAlerts')}
-                className="flex items-center gap-2"
-              >
-                🚨 Alerts
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => { setSelectedDisaster('Flood'); setCurrentScreen('evacuationRoutes'); }}
-                className="flex items-center gap-2"
-              >
-                <Navigation className="w-4 h-4" />
-                Routes
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setCurrentScreen('emergencyTools')}
-                className="flex items-center gap-2 text-red-600 hover:text-red-700"
-              >
-                <AlertCircle className="w-4 h-4" />
-                Emergency
-              </Button>
-
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={signOut}
-                className="flex items-center gap-2"
-              >
-                <LogOut className="w-4 h-4" />
-                Logout
-              </Button>
+      <div className="min-h-screen bg-red-600 text-white p-6 flex items-center justify-center">
+        <div className="max-w-4xl mx-auto text-center">
+          <div className="text-8xl mb-8 animate-pulse">🚨</div>
+          <h1 className="text-6xl font-bold mb-4">EMERGENCY MODE</h1>
+          <p className="text-2xl mb-8">Immediate disaster response activated</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+            <div className="bg-white/10 p-6 rounded-lg">
+              <h3 className="text-2xl font-bold mb-4">Emergency Contacts</h3>
+              <div className="space-y-2 text-left">
+                <p className="text-xl">🚔 Police: 100</p>
+                <p className="text-xl">🚒 Fire: 101</p>
+                <p className="text-xl">🚑 Ambulance: 108</p>
+                <p className="text-xl">🌪️ Disaster Help: 1078</p>
+              </div>
+            </div>
+            <div className="bg-white/10 p-6 rounded-lg">
+              <h3 className="text-2xl font-bold mb-4">Immediate Actions</h3>
+              <div className="space-y-2 text-left">
+                <p className="text-lg">1. Stay calm and assess situation</p>
+                <p className="text-lg">2. Follow evacuation procedures</p>
+                <p className="text-lg">3. Help others if safe to do so</p>
+                <p className="text-lg">4. Call emergency services if needed</p>
+              </div>
             </div>
           </div>
+          
+          <button 
+            onClick={() => setShowEmergency(false)}
+            className="bg-white text-red-600 font-bold text-xl py-4 px-8 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            Exit Emergency Mode
+          </button>
         </div>
-      </nav>
+      </div>
     );
-  };
+  }
 
-  return (
-    <div>
-      <NavigationBar />
-      
-      <main className="min-h-screen">
-        {currentScreen === 'welcome' && (
-          <WelcomeScreen 
-            onGetStarted={() => setCurrentScreen('disasters')}
-          />
-        )}
-        
-        {currentScreen === 'disasters' && (
-          <DisasterSelection 
-            onBack={() => setCurrentScreen('welcome')}
-            onSelectDisaster={handleDisasterSelect}
-          />
-        )}
-        
-        {currentScreen === 'quiz' && (
-          <QuizComponent 
-            disasterType={selectedDisaster}
-            onBack={() => setCurrentScreen('disasters')}
-            onComplete={() => setCurrentScreen('studentDashboard')}
-          />
-        )}
-        
-        {currentScreen === 'studentDashboard' && (
-          <StudentDashboard onBack={() => setCurrentScreen('welcome')} />
-        )}
-        
-        {currentScreen === 'adminDashboard' && (
-          <AdminDashboard onBack={() => setCurrentScreen('welcome')} />
-        )}
-        
-        {currentScreen === 'regionalAwareness' && (
-          <div className="pt-20 px-4">
-            <div className="max-w-4xl mx-auto">
-              <RegionalDisasterAwareness />
-            </div>
-          </div>
-        )}
-        
-        {currentScreen === 'emergencyTools' && (
-          <EmergencyTools onBack={() => setCurrentScreen('welcome')} />
-        )}
-        
-        {currentScreen === 'drill' && (
-          <DrillSimulation 
-            disasterType={selectedDisaster}
-            onBack={() => setCurrentScreen('disasters')}
-            onComplete={handleDrillComplete}
-          />
-        )}
-        
-        {currentScreen === 'postDrillQuiz' && (
-          <div className="pt-20 px-4">
-            <div className="max-w-4xl mx-auto">
-              <PostDrillQuiz 
-                disasterType={selectedDisaster}
-                onComplete={handleQuizComplete}
-                onSkip={() => setCurrentScreen('studentDashboard')}
-              />
-            </div>
-          </div>
-        )}
-        
-        {currentScreen === 'liveAlerts' && (
-          <div className="pt-20 px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-6">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setCurrentScreen('welcome')}
-                  className="mb-4"
-                >
-                  ← Back to Home
-                </Button>
-                <h1 className="text-3xl font-bold mb-2">Live Disaster Alerts</h1>
-                <p className="text-muted-foreground">
-                  Real-time alerts from NDMA and IMD for your region
-                </p>
-              </div>
-              <DisasterAlertsPanel />
-            </div>
-          </div>
-        )}
-        
-        {currentScreen === 'evacuationRoutes' && (
-          <div className="pt-20 px-4">
-            <div className="max-w-4xl mx-auto">
-              <div className="mb-6">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setCurrentScreen('welcome')}
-                  className="mb-4"
-                >
-                  ← Back to Home
-                </Button>
-                <h1 className="text-3xl font-bold mb-2">Evacuation Routes & Safe Zones</h1>
-                <p className="text-muted-foreground">
-                  Find the nearest safe zones and evacuation routes for different disaster scenarios
-                </p>
-              </div>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-                  {['Flood', 'Earthquake', 'Cyclone'].map((disaster) => (
-                    <Button
-                      key={disaster}
-                      variant={selectedDisaster === disaster ? "default" : "outline"}
-                      onClick={() => setSelectedDisaster(disaster)}
-                      className="h-auto py-4"
-                    >
-                      <div className="text-center">
-                        <div className="text-2xl mb-2">
-                          {disaster === 'Flood' ? '🌊' : disaster === 'Earthquake' ? '🏚️' : '🌪️'}
-                        </div>
-                        <div>{disaster}</div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
-                <EvacuationRoutes disasterType={selectedDisaster} />
-              </div>
-            </div>
-          </div>
-        )}
-      </main>
-      
-      {/* AI Chatbot - always visible when user is logged in */}
-      <AIChatbot />
-    </div>
-  );
+  // Show age selection if no age group selected
+  if (!ageGroup) {
+    return <AgeSelectionLanding onAgeSelect={handleAgeSelect} />;
+  }
+
+  // Render age-specific UI
+  switch (ageGroup) {
+    case 'primary':
+      return <KidsUI onBack={handleBackToAgeSelection} />;
+    case 'middle':
+      return <MiddleSchoolUI onBack={handleBackToAgeSelection} />;
+    case 'high':
+      return <HighSchoolUI onBack={handleBackToAgeSelection} />;
+    case 'adults':
+      return <AdultsUI onBack={handleBackToAgeSelection} />;
+    default:
+      return <AgeSelectionLanding onAgeSelect={handleAgeSelect} />;
+  }
 };
 
 export default Index;
