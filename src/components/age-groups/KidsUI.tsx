@@ -9,6 +9,8 @@ import { EmergencyTools } from '@/components/EmergencyTools';
 import { EvacuationRoutes } from '@/components/EvacuationRoutes';
 import { DrillSimulation } from '@/components/DrillSimulation';
 import { AchievementSystem } from '@/components/AchievementSystem';
+import { DisasterContentCard } from '@/components/DisasterContentCard';
+import { disasterData } from '@/data/disasterContent';
 
 interface KidsUIProps {
   onBack: () => void;
@@ -20,48 +22,13 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
   const [points, setPoints] = useState(0);
   const [selectedDisaster, setSelectedDisaster] = useState<string | null>(null);
 
-  const disasters = [
-    {
-      id: 'fire',
-      title: '🔥 Fire Safety',
-      description: 'Learn how to stay safe from fires!',
-      mascot: '🚒',
-      color: 'bg-gradient-to-br from-red-200 to-orange-200',
-      story: 'Meet Firey the Fire Truck! He helps keep everyone safe from fires.'
-    },
-    {
-      id: 'flood',
-      title: '🌊 Water Safety',
-      description: 'What to do when there\'s too much water!',
-      mascot: '🚤',
-      color: 'bg-gradient-to-br from-blue-200 to-cyan-200',
-      story: 'Splashy the Boat wants to teach you about flood safety!'
-    },
-    {
-      id: 'cyclone',
-      title: '🌪️ Wind Safety',
-      description: 'Stay safe when the wind is very strong!',
-      mascot: '🏠',
-      color: 'bg-gradient-to-br from-purple-200 to-pink-200',
-      story: 'Windy the House shows you how to be safe in storms!'
-    },
-    {
-      id: 'earthquake',
-      title: '🏚️ Ground Shaking',
-      description: 'What to do when the ground shakes!',
-      mascot: '🦺',
-      color: 'bg-gradient-to-br from-yellow-200 to-amber-200',
-      story: 'Shaky the Safety Hero teaches earthquake safety!'
-    }
-  ];
-
-  const handleDisasterClick = (disaster: any) => {
-    setSelectedDisaster(disaster.id);
-    setCurrentSection('learning');
+  const handleDisasterDrill = (disasterId: string) => {
+    setSelectedDisaster(disasterId);
+    setCurrentSection('drill');
     // Add points and badge
     setPoints(prev => prev + 10);
-    if (!badges.includes(disaster.id)) {
-      setBadges(prev => [...prev, disaster.id]);
+    if (!badges.includes(disasterId)) {
+      setBadges(prev => [...prev, disasterId]);
     }
   };
 
@@ -99,53 +66,14 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
 
         {/* Disaster Learning Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {disasters.map((disaster) => (
-            <Card 
+          {disasterData.map((disaster) => (
+            <DisasterContentCard
               key={disaster.id}
-              className={`${disaster.color} border-4 border-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden`}
-              onClick={() => handleDisasterClick(disaster)}
-            >
-              <CardHeader className="text-center">
-                <div className="text-8xl mb-4 animate-pulse">
-                  {disaster.mascot}
-                </div>
-                <CardTitle className="text-2xl font-bold text-gray-800">
-                  {disaster.title}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-center">
-                <p className="text-lg text-gray-700 mb-4 font-semibold">
-                  {disaster.description}
-                </p>
-                <p className="text-md text-gray-600 mb-4 italic">
-                  {disaster.story}
-                </p>
-                <div className="space-y-3">
-                  <Button 
-                    className="w-full bg-gradient-to-r from-green-400 to-blue-400 text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105"
-                    size="lg"
-                    onClick={() => handleDisasterClick(disaster)}
-                  >
-                    Let's Learn! 🌟
-                  </Button>
-                  <Button 
-                    variant="outline"
-                    className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold text-lg py-2 px-4 rounded-full border-0"
-                    onClick={() => {
-                      setSelectedDisaster(disaster.id);
-                      setCurrentSection('drill');
-                    }}
-                  >
-                    Practice Drill! 🎯
-                  </Button>
-                </div>
-                {badges.includes(disaster.id) && (
-                  <Badge className="mt-2 bg-gold text-yellow-800 font-bold">
-                    ⭐ Completed!
-                  </Badge>
-                )}
-              </CardContent>
-            </Card>
+              disaster={disaster}
+              ageGroup="primary"
+              onStartDrill={handleDisasterDrill}
+              isCompleted={badges.includes(disaster.id)}
+            />
           ))}
         </div>
       </div>

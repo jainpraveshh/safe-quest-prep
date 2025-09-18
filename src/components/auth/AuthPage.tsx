@@ -21,8 +21,21 @@ const indianStates = [
   'Telangana', 'Tripura', 'Uttar Pradesh', 'Uttarakhand', 'West Bengal'
 ];
 
-const ageGroups = ['8-10 years', '11-13 years', '14-16 years', '17-19 years', 'Teacher', 'Admin'];
+const ageGroups = [
+  'Primary (5-10 years)', 
+  'Middle (11-14 years)', 
+  'High School (15-18 years)', 
+  'Teacher/Adult'
+];
+
 const userRoles = ['student', 'teacher', 'admin'];
+
+const mapAgeGroupToUI = (ageGroup: string) => {
+  if (ageGroup.includes('Primary')) return 'primary';
+  if (ageGroup.includes('Middle')) return 'middle';
+  if (ageGroup.includes('High School')) return 'high';
+  return 'adults';
+};
 
 export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
   const [isLoading, setIsLoading] = useState(false);
@@ -261,19 +274,6 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
                   </div>
                 </div>
                 <div>
-                  <Label htmlFor="age-group">Age Group</Label>
-                  <Select value={signupData.ageGroup} onValueChange={(value) => setSignupData({...signupData, ageGroup: value})}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select age group" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {ageGroups.map((group) => (
-                        <SelectItem key={group} value={group}>{group}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
                   <Label htmlFor="user-role">Role</Label>
                   <Select value={signupData.userRole} onValueChange={(value) => setSignupData({...signupData, userRole: value})}>
                     <SelectTrigger>
@@ -288,6 +288,36 @@ export const AuthPage = ({ onAuthSuccess }: AuthPageProps) => {
                     </SelectContent>
                   </Select>
                 </div>
+                
+                {signupData.userRole === 'student' && (
+                  <div>
+                    <Label htmlFor="age-group">Age Group</Label>
+                    <Select value={signupData.ageGroup} onValueChange={(value) => setSignupData({...signupData, ageGroup: value})} required>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your age group" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ageGroups.map((group) => (
+                          <SelectItem key={group} value={group}>{group}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+                
+                {signupData.userRole !== 'student' && (
+                  <div>
+                    <Label htmlFor="age-group">Category</Label>
+                    <Select value={signupData.ageGroup} onValueChange={(value) => setSignupData({...signupData, ageGroup: value})}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Teacher/Adult" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Teacher/Adult">Teacher/Adult</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
                 <Button type="submit" className="w-full" disabled={isLoading}>
                   {isLoading ? 'Creating Account...' : 'Create Account'}
                 </Button>

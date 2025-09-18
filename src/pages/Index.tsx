@@ -10,9 +10,23 @@ import { AdultsUI } from "@/components/age-groups/AdultsUI";
 import { LoadingSpinner } from "@/components/LoadingSpinner";
 
 const Index = () => {
-  const { user, loading } = useAuth();
+  const { user, profile, loading } = useAuth();
   const { ageGroup, setAgeGroup } = useAgeGroup();
   const [showEmergency, setShowEmergency] = useState(false);
+
+  // Auto-set age group based on user profile
+  const getAgeGroupFromProfile = (profile: any) => {
+    if (!profile) return null;
+    
+    if (profile.user_role === 'student') {
+      const ageGroup = profile.age_group;
+      if (ageGroup?.includes('Primary')) return 'primary';
+      if (ageGroup?.includes('Middle')) return 'middle';
+      if (ageGroup?.includes('High School')) return 'high';
+    }
+    
+    return 'adults'; // For teachers and admins
+  };
 
   const handleAgeSelect = (age: AgeGroup) => {
     setAgeGroup(age);
@@ -77,13 +91,38 @@ const Index = () => {
     );
   }
 
-  // Show age selection if no age group selected
-  if (!ageGroup) {
+  // Auto-redirect based on user role and profile
+  const userAgeGroup = getAgeGroupFromProfile(profile);
+  const currentAgeGroup = ageGroup || userAgeGroup;
+
+  // For students, always show their age-appropriate UI
+  if (profile?.user_role === 'student' && userAgeGroup) {
+    if (!ageGroup) setAgeGroup(userAgeGroup);
+    
+    switch (userAgeGroup) {
+      case 'primary':
+        return <KidsUI onBack={handleBackToAgeSelection} />;
+      case 'middle':
+        return <MiddleSchoolUI onBack={handleBackToAgeSelection} />;
+      case 'high':
+        return <HighSchoolUI onBack={handleBackToAgeSelection} />;
+    }
+  }
+
+  // For teachers/admins, show age selection or selected UI
+  if (profile?.user_role === 'teacher' || profile?.user_role === 'admin') {
+    if (!currentAgeGroup) {
+      return <AgeSelectionLanding onAgeSelect={handleAgeSelect} />;
+    }
+  }
+
+  // Show age selection if no age group selected (fallback)
+  if (!currentAgeGroup) {
     return <AgeSelectionLanding onAgeSelect={handleAgeSelect} />;
   }
 
   // Render age-specific UI
-  switch (ageGroup) {
+  switch (currentAgeGroup) {
     case 'primary':
       return <KidsUI onBack={handleBackToAgeSelection} />;
     case 'middle':
