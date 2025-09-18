@@ -2,23 +2,91 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- Security Headers -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block" />
+    <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
+    
+    <!-- Favicon and Icons -->
     <link rel="icon" type="image/png" href="/src/assets/edushield-logo.png" />
+    <link rel="apple-touch-icon" href="/src/assets/edushield-logo.png" />
+    
+    <!-- Primary Meta Tags -->
     <title>EduShield - Disaster Preparedness Education Platform</title>
+    <meta name="title" content="EduShield - Disaster Preparedness Education Platform" />
     <meta name="description" content="Interactive disaster preparedness training for students. Learn earthquake safety, fire emergency protocols, flood response, and cyclone preparedness through gamified simulations, quizzes, and virtual drills." />
+    <meta name="keywords" content="disaster preparedness, education, safety training, earthquake, flood, cyclone, fire safety, India, students, emergency response" />
     <meta name="author" content="EduShield Education Platform" />
-
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://edushield.in/" />
     <meta property="og:title" content="EduShield - Master Disaster Preparedness" />
     <meta property="og:description" content="Engaging disaster safety education for students with interactive simulations, emergency quizzes, and gamified learning. Build life-saving skills through virtual drills." />
-    <meta property="og:type" content="website" />
     <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-
+    <meta property="og:site_name" content="EduShield" />
+    
+    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
+    <meta name="twitter:url" content="https://edushield.in/" />
+    <meta name="twitter:title" content="EduShield - Master Disaster Preparedness" />
+    <meta name="twitter:description" content="Engaging disaster safety education for students with interactive simulations, emergency quizzes, and gamified learning." />
     <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:site" content="@lovable_dev" />
+    
+    <!-- Performance Optimizations -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="dns-prefetch" href="https://fbmlsdftletwtmnxhswk.supabase.co" />
+    
+    <!-- Theme Color -->
+    <meta name="theme-color" content="#059669" />
+    <meta name="msapplication-TileColor" content="#059669" />
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="/src/assets/edushield-logo.png" as="image" />
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalOrganization",
+      "name": "EduShield",
+      "description": "Disaster Preparedness Education Platform for India",
+      "url": "https://edushield.in",
+      "logo": "https://edushield.in/src/assets/edushield-logo.png",
+      "sameAs": [
+        "https://twitter.com/lovable_dev"
+      ],
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      }
+    }
+    </script>
   </head>
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Loading fallback -->
+      <div style="display: flex; justify-content: center; align-items: center; height: 100vh; background: linear-gradient(135deg, #059669, #0d9488);">
+        <div style="text-align: center; color: white;">
+          <div style="width: 50px; height: 50px; border: 3px solid rgba(255,255,255,0.3); border-top: 3px solid white; border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 20px;"></div>
+          <p>Loading EduShield...</p>
+        </div>
+      </div>
+      <style>
+        @keyframes spin {
+          0% { transform: rotate(0deg); }
+          100% { transform: rotate(360deg); }
+        }
+      </style>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

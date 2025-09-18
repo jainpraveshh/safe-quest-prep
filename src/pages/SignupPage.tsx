@@ -79,18 +79,54 @@ export const SignupPage = () => {
       });
 
       if (authError) {
+        console.error('Signup error:', authError);
         setError(authError.message);
       } else if (authData.user) {
-        // Check if email confirmation is required
-        if (!authData.user.email_confirmed_at && !authData.session) {
-          setSuccess('Account created! Please check your email and click the confirmation link to complete signup.');
+        // Create profile record immediately after signup
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            user_id: authData.user.id,
+            name: signupData.name,
+            school_name: signupData.schoolName,
+            region: signupData.region,
+            roll_no: signupData.rollNo,
+            class_no: signupData.classNo,
+            age_group: signupData.ageGroup,
+            user_role: signupData.userRole
+          });
+
+        if (profileError) {
+          console.error('Profile creation error:', profileError);
+          setError('Account created but profile setup failed. Please try logging in.');
         } else {
-          // Auto-login successful - redirect to main app
-          navigate('/');
+          // Check if email confirmation is required
+          if (!authData.user.email_confirmed_at && !authData.session) {
+            // In development, try to sign in immediately if email confirmation is disabled
+            if (import.meta.env.DEV) {
+              console.log('Development mode: Attempting auto-login...');
+              const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+                email: signupData.email,
+                password: signupData.password
+              });
+              
+              if (signInData.user && !signInError) {
+                setSuccess('Account created and logged in successfully! (Development mode)');
+                setTimeout(() => navigate('/'), 1000);
+                return;
+              }
+            }
+            setSuccess('Account created successfully! Please check your email and click the confirmation link to complete signup. If you don\'t see the email, check your spam folder.');
+          } else {
+            // Auto-login successful - redirect to main app
+            setSuccess('Account created and logged in successfully!');
+            setTimeout(() => navigate('/'), 1000);
+          }
         }
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Unexpected error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -118,7 +154,37 @@ export const SignupPage = () => {
           {success && (
             <Alert className="mb-4">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{success}</AlertDescription>
+              <AlertDescription>
+                {success}
+                {success.includes('check your email') && (
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={async () => {
+                        try {
+                          const { error } = await supabase.auth.resend({
+                            type: 'signup',
+                            email: signupData.email,
+                            options: {
+                              emailRedirectTo: `${window.location.origin}/`
+                            }
+                          });
+                          if (error) {
+                            setError('Failed to resend email. Please try again.');
+                          } else {
+                            setSuccess('Confirmation email sent again! Please check your email.');
+                          }
+                        } catch (err) {
+                          setError('Failed to resend email. Please try again.');
+                        }
+                      }}
+                    >
+                      Resend Confirmation Email
+                    </Button>
+                  </div>
+                )}
+              </AlertDescription>
             </Alert>
           )}
 

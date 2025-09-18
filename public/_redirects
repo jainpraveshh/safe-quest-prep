@@ -1,0 +1,6 @@
+# SPA fallback for client-side routing
+/*    /index.html   200
+
+# Security redirects
+http://edushield.in/*    https://edushield.in/:splat    301!
+https://www.edushield.in/*    https://edushield.in/:splat    301!

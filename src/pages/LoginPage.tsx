@@ -21,19 +21,30 @@ export const LoginPage = () => {
     setError('');
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { data, error } = await supabase.auth.signInWithPassword({
         email: loginEmail,
         password: loginPassword
       });
 
       if (error) {
-        setError(error.message);
-      } else {
-        // Successful login - redirect to main app
-        navigate('/');
+        console.error('Login error:', error);
+        if (error.message.includes('email not confirmed')) {
+          setError('Please check your email and click the confirmation link before logging in. Check your spam folder if you don\'t see the email.');
+        } else {
+          setError(error.message);
+        }
+      } else if (data.user) {
+        // Check if email is confirmed
+        if (!data.user.email_confirmed_at) {
+          setError('Please check your email and click the confirmation link before logging in. Check your spam folder if you don\'t see the email.');
+        } else {
+          // Successful login - redirect to main app
+          navigate('/');
+        }
       }
     } catch (err) {
-      setError('An unexpected error occurred');
+      console.error('Unexpected error:', err);
+      setError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +65,37 @@ export const LoginPage = () => {
           {error && (
             <Alert className="mb-4" variant="destructive">
               <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>
+                {error}
+                {error.includes('check your email') && (
+                  <div className="mt-2">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={async () => {
+                        try {
+                          const { error: resendError } = await supabase.auth.resend({
+                            type: 'signup',
+                            email: loginEmail,
+                            options: {
+                              emailRedirectTo: `${window.location.origin}/`
+                            }
+                          });
+                          if (resendError) {
+                            setError('Failed to resend email. Please try again.');
+                          } else {
+                            setError('Confirmation email sent again! Please check your email and spam folder.');
+                          }
+                        } catch (err) {
+                          setError('Failed to resend email. Please try again.');
+                        }
+                      }}
+                    >
+                      Resend Confirmation Email
+                    </Button>
+                  </div>
+                )}
+              </AlertDescription>
             </Alert>
           )}
 
