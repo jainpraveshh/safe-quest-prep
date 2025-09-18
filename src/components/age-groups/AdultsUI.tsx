@@ -2,21 +2,17 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { 
-  FileText, 
-  Download, 
-  Users, 
-  BarChart3, 
-  Settings, 
-  Home, 
-  Shield,
-  BookOpen,
-  ClipboardCheck,
-  AlertTriangle,
-  Phone
-} from 'lucide-react';
+import { FileText, Users, BarChart3, Settings, Home, Shield, AlertTriangle, BookOpen, MapPin, Trophy } from 'lucide-react';
+import { StudentDashboard } from '@/components/StudentDashboard';
+import { AdminDashboard } from '@/components/AdminDashboard';
+import { DisasterSelection } from '@/components/DisasterSelection';
+import { DisasterAlertsPanel } from '@/components/DisasterAlertsPanel';
+import { AIChatbot } from '@/components/AIChatbot';
+import { EmergencyTools } from '@/components/EmergencyTools';
+import { EvacuationRoutes } from '@/components/EvacuationRoutes';
+import { DrillSimulation } from '@/components/DrillSimulation';
+import { AchievementSystem } from '@/components/AchievementSystem';
 
 interface AdultsUIProps {
   onBack: () => void;
@@ -24,252 +20,301 @@ interface AdultsUIProps {
 
 export const AdultsUI = ({ onBack }: AdultsUIProps) => {
   const [currentSection, setCurrentSection] = useState('dashboard');
-  const [completedTrainings, setCompletedTrainings] = useState<string[]>([]);
+  const [selectedDisaster, setSelectedDisaster] = useState<string | null>(null);
 
-  const disasters = [
-    {
-      id: 'fire',
-      title: 'Fire Safety Management',
-      description: 'Complete fire safety protocols, evacuation procedures, and emergency response coordination',
-      modules: ['Fire Prevention', 'Evacuation Planning', 'Emergency Coordination', 'Post-Incident Analysis'],
-      certification: 'Fire Safety Coordinator',
-      color: 'bg-red-50 border-red-200',
-      icon: '🔥',
-      duration: '4 hours'
-    },
-    {
-      id: 'flood',
-      title: 'Flood Response Management',
-      description: 'Comprehensive flood preparedness, response strategies, and community coordination',
-      modules: ['Risk Assessment', 'Early Warning Systems', 'Resource Management', 'Recovery Planning'],
-      certification: 'Flood Response Manager',
-      color: 'bg-blue-50 border-blue-200',
-      icon: '🌊',
-      duration: '5 hours'
-    },
-    {
-      id: 'cyclone',
-      title: 'Cyclone Preparedness',
-      description: 'Advanced cyclone tracking, community preparation, and disaster response coordination',
-      modules: ['Weather Monitoring', 'Infrastructure Protection', 'Community Mobilization', 'Emergency Services'],
-      certification: 'Cyclone Response Specialist',
-      color: 'bg-purple-50 border-purple-200',
-      icon: '🌪️',
-      duration: '6 hours'
-    },
-    {
-      id: 'earthquake',
-      title: 'Seismic Safety Leadership',
-      description: 'Earthquake preparedness, structural assessment, and emergency response leadership',
-      modules: ['Structural Safety', 'Search & Rescue', 'Medical Response', 'Infrastructure Recovery'],
-      certification: 'Seismic Safety Leader',
-      color: 'bg-yellow-50 border-yellow-200',
-      icon: '🏚️',
-      duration: '7 hours'
-    }
-  ];
-
-  const renderDashboard = () => (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Professional Header */}
-      <div className="max-w-7xl mx-auto">
-        <div className="bg-white shadow-lg rounded-lg mb-8 p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <Shield className="h-12 w-12 text-blue-600" />
-              <div>
-                <h1 className="text-4xl font-bold text-gray-900">
-                  Professional Disaster Management Center
-                </h1>
-                <p className="text-lg text-gray-600">
-                  Comprehensive training and certification platform for educators and emergency professionals
-                </p>
-              </div>
-            </div>
-            <Badge className="bg-green-100 text-green-800 text-lg py-2 px-4">
-              Certified Instructor
-            </Badge>
+  // Handle different sections
+  if (currentSection === 'student-dashboard') {
+    return <StudentDashboard onBack={() => setCurrentSection('dashboard')} />;
+  }
+  if (currentSection === 'admin-dashboard') {
+    return <AdminDashboard onBack={() => setCurrentSection('dashboard')} />;
+  }
+  if (currentSection === 'disaster-selection') {
+    return <DisasterSelection onBack={() => setCurrentSection('dashboard')} onSelectDisaster={(type) => {
+      if (type.includes('-drill')) {
+        setSelectedDisaster(type.replace('-drill', ''));
+        setCurrentSection('drill');
+      } else {
+        setSelectedDisaster(type);
+        setCurrentSection('disaster-info');
+      }
+    }} />;
+  }
+  if (currentSection === 'drill' && selectedDisaster) {
+    return (
+      <DrillSimulation 
+        disasterType={selectedDisaster}
+        onBack={() => setCurrentSection('disaster-selection')}
+        onComplete={() => setCurrentSection('dashboard')}
+      />
+    );
+  }
+  if (currentSection === 'emergency') {
+    return <EmergencyTools onBack={() => setCurrentSection('dashboard')} />;
+  }
+  if (currentSection === 'routes') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50 p-6">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => setCurrentSection('dashboard')}
+              className="mb-4 bg-gradient-to-r from-gray-700 to-blue-600 text-white font-bold"
+            >
+              🏠 Back to Dashboard
+            </Button>
+            <h1 className="text-3xl font-bold text-gray-800 mb-4">
+              🗺️ PROFESSIONAL EVACUATION ROUTE MANAGEMENT
+            </h1>
+            <p className="text-lg text-muted-foreground">Advanced route planning and optimization tools</p>
           </div>
-          
-          {/* Quick Stats */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <Card className="bg-blue-50 border-blue-200">
-              <CardContent className="p-4 text-center">
-                <BookOpen className="h-8 w-8 text-blue-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-blue-800">{completedTrainings.length}/4</p>
-                <p className="text-blue-700 font-medium">Certifications</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-green-50 border-green-200">
-              <CardContent className="p-4 text-center">
-                <Users className="h-8 w-8 text-green-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-green-800">156</p>
-                <p className="text-green-700 font-medium">Students Trained</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-purple-50 border-purple-200">
-              <CardContent className="p-4 text-center">
-                <BarChart3 className="h-8 w-8 text-purple-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-purple-800">98%</p>
-                <p className="text-purple-700 font-medium">Success Rate</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-orange-50 border-orange-200">
-              <CardContent className="p-4 text-center">
-                <ClipboardCheck className="h-8 w-8 text-orange-600 mx-auto mb-2" />
-                <p className="text-2xl font-bold text-orange-800">24</p>
-                <p className="text-orange-700 font-medium">Active Drills</p>
-              </CardContent>
-            </Card>
+          <EvacuationRoutes disasterType="general" />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  if (currentSection === 'achievements') {
+    return <AchievementSystem onClose={() => setCurrentSection('dashboard')} />;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-blue-50">
+      {/* Professional Header */}
+      <header className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" onClick={onBack} className="text-gray-600">
+                <Home className="h-4 w-4 mr-2" />
+                Age Selection
+              </Button>
+              <div className="h-6 w-px bg-gray-300"></div>
+              <h1 className="text-2xl font-bold text-gray-800">EduShield Professional</h1>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Badge variant="outline" className="border-green-500 text-green-700">
+                <Shield className="h-3 w-3 mr-1" />
+                System Active
+              </Badge>
+              <Button 
+                variant="destructive" 
+                size="sm"
+                onClick={() => setCurrentSection('emergency')}
+                className="animate-pulse"
+              >
+                🚨 Emergency Mode
+              </Button>
+            </div>
           </div>
         </div>
+      </header>
 
-        {/* Main Content Tabs */}
-        <Tabs defaultValue="training" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 mb-8">
-            <TabsTrigger value="training">📚 Training Modules</TabsTrigger>
-            <TabsTrigger value="resources">📄 Resources</TabsTrigger>
-            <TabsTrigger value="reports">📊 Reports</TabsTrigger>
-            <TabsTrigger value="emergency">🚨 Emergency</TabsTrigger>
+      {/* Main Content Area */}
+      <main className="container mx-auto px-4 py-8">
+        <Tabs value={currentSection} onValueChange={setCurrentSection}>
+          <TabsList className="grid grid-cols-6 w-full max-w-3xl mx-auto mb-8">
+            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+            <TabsTrigger value="training">Training</TabsTrigger>
+            <TabsTrigger value="alerts">Live Alerts</TabsTrigger>
+            <TabsTrigger value="reports">Reports</TabsTrigger>
+            <TabsTrigger value="resources">Resources</TabsTrigger>
+            <TabsTrigger value="settings">Settings</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="training">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {disasters.map((disaster) => (
-                <Card 
-                  key={disaster.id}
-                  className={`${disaster.color} hover:shadow-lg transition-all duration-300 cursor-pointer`}
-                  onClick={() => {
-                    if (!completedTrainings.includes(disaster.id)) {
-                      setCompletedTrainings(prev => [...prev, disaster.id]);
-                    }
-                  }}
-                >
+          {/* Dashboard Tab */}
+          <TabsContent value="dashboard">
+            <div className="grid lg:grid-cols-3 gap-6">
+              {/* Quick Actions */}
+              <div className="lg:col-span-2 space-y-6">
+                <Card>
                   <CardHeader>
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-4xl">{disaster.icon}</span>
-                      <div>
-                        <CardTitle className="text-xl font-bold text-gray-800">
-                          {disaster.title}
-                        </CardTitle>
-                        <p className="text-sm text-gray-600">Duration: {disaster.duration}</p>
-                      </div>
-                    </div>
+                    <CardTitle className="flex items-center">
+                      <BarChart3 className="h-5 w-5 mr-2 text-blue-600" />
+                      Quick Actions
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700 mb-4">{disaster.description}</p>
-                    
-                    <div className="mb-4">
-                      <h4 className="font-semibold text-gray-800 mb-2">Training Modules:</h4>
-                      <div className="space-y-1">
-                        {disaster.modules.map((module, index) => (
-                          <div key={index} className="flex items-center gap-2 text-sm text-gray-600">
-                            <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
-                            {module}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-center justify-between">
-                      <Badge className="bg-gray-200 text-gray-800">
-                        {disaster.certification}
-                      </Badge>
-                      {completedTrainings.includes(disaster.id) ? (
-                        <Badge className="bg-green-600 text-white">
-                          ✅ Certified
-                        </Badge>
-                      ) : (
-                        <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                          Start Training
-                        </Button>
-                      )}
+                    <div className="grid grid-cols-2 gap-4">
+                      <Button 
+                        variant="outline" 
+                        className="h-20 flex-col"
+                        onClick={() => setCurrentSection('student-dashboard')}
+                      >
+                        <Users className="h-6 w-6 mb-2 text-blue-600" />
+                        Student Progress
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="h-20 flex-col"
+                        onClick={() => setCurrentSection('disaster-selection')}
+                      >
+                        <AlertTriangle className="h-6 w-6 mb-2 text-orange-600" />
+                        Start Training
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="h-20 flex-col"
+                        onClick={() => setCurrentSection('admin-dashboard')}
+                      >
+                        <FileText className="h-6 w-6 mb-2 text-green-600" />
+                        Admin Panel
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="h-20 flex-col"
+                        onClick={() => setCurrentSection('routes')}
+                      >
+                        <MapPin className="h-6 w-6 mb-2 text-purple-600" />
+                        Evacuation Routes
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
-              ))}
+
+                {/* System Status */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center">
+                      <Shield className="h-5 w-5 mr-2 text-green-600" />
+                      System Status
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-3 gap-4 text-center">
+                      <div>
+                        <div className="text-2xl font-bold text-green-600">98.5%</div>
+                        <div className="text-sm text-muted-foreground">System Uptime</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-blue-600">1,247</div>
+                        <div className="text-sm text-muted-foreground">Active Users</div>
+                      </div>
+                      <div>
+                        <div className="text-2xl font-bold text-purple-600">Real-time</div>
+                        <div className="text-sm text-muted-foreground">Alert Status</div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Sidebar - Quick Stats */}
+              <div className="space-y-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Today's Overview</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Active Drills</span>
+                        <Badge variant="secondary">4</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Completed Training</span>
+                        <Badge variant="secondary">12</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">Alerts Issued</span>
+                        <Badge variant="secondary">2</Badge>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm">System Health</span>
+                        <Badge variant="default" className="bg-green-600">Excellent</Badge>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Quick Access</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <Trophy className="h-4 w-4 mr-2" />
+                        Achievements
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <BarChart3 className="h-4 w-4 mr-2" />
+                        Analytics
+                      </Button>
+                      <Button variant="outline" size="sm" className="w-full justify-start">
+                        <Settings className="h-4 w-4 mr-2" />
+                        Settings
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </TabsContent>
 
-          <TabsContent value="resources">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="hover:shadow-lg transition-shadow">
+          {/* Training Tab */}
+          <TabsContent value="training">
+            <div className="space-y-6">
+              <Card>
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <FileText className="h-5 w-5" />
-                    Training Manuals
-                  </CardTitle>
+                  <CardTitle>Disaster Preparedness Training Modules</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    {['Emergency Response Guide', 'Evacuation Procedures', 'First Aid Manual', 'Communication Protocols'].map((manual, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                        <span className="text-sm font-medium">{manual}</span>
-                        <Button size="sm" variant="ghost">
-                          <Download className="h-4 w-4" />
-                        </Button>
-                      </div>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {[
+                      { title: "Earthquake Response", status: "Available", color: "text-green-600", id: "earthquake" },
+                      { title: "Fire Safety", status: "Available", color: "text-green-600", id: "fire" },
+                      { title: "Flood Management", status: "Available", color: "text-green-600", id: "flood" },
+                      { title: "Cyclone Preparedness", status: "Available", color: "text-green-600", id: "cyclone" },
+                    ].map((module, index) => (
+                      <Card key={index} className="border cursor-pointer hover:shadow-lg transition-shadow">
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-semibold">{module.title}</h4>
+                            <Badge variant="outline" className={module.color}>
+                              {module.status}
+                            </Badge>
+                          </div>
+                          <div className="space-y-2">
+                            <Button 
+                              size="sm" 
+                              className="w-full"
+                              onClick={() => {
+                                setSelectedDisaster(module.id);
+                                setCurrentSection('disaster-selection');
+                              }}
+                            >
+                              Start Training
+                            </Button>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="w-full"
+                              onClick={() => {
+                                setSelectedDisaster(module.id);
+                                setCurrentSection('drill');
+                              }}
+                            >
+                              Practice Drill
+                            </Button>
+                          </div>
+                        </CardContent>
+                      </Card>
                     ))}
                   </div>
                 </CardContent>
               </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Users className="h-5 w-5" />
-                    Student Management
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    <div className="p-3 bg-blue-50 rounded">
-                      <h4 className="font-semibold text-blue-800">Class Progress</h4>
-                      <p className="text-sm text-blue-700">Track individual and group progress</p>
-                    </div>
-                    <div className="p-3 bg-green-50 rounded">
-                      <h4 className="font-semibold text-green-800">Certificates</h4>
-                      <p className="text-sm text-green-700">Generate completion certificates</p>
-                    </div>
-                    <div className="p-3 bg-purple-50 rounded">
-                      <h4 className="font-semibold text-purple-800">Reports</h4>
-                      <p className="text-sm text-purple-700">Detailed performance analytics</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="hover:shadow-lg transition-shadow">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Settings className="h-5 w-5" />
-                    School Administration
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <Button variant="outline" className="w-full justify-start">
-                      <ClipboardCheck className="h-4 w-4 mr-2" />
-                      Drill Schedule
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <AlertTriangle className="h-4 w-4 mr-2" />
-                      Risk Assessment
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <Phone className="h-4 w-4 mr-2" />
-                      Emergency Contacts
-                    </Button>
-                    <Button variant="outline" className="w-full justify-start">
-                      <BarChart3 className="h-4 w-4 mr-2" />
-                      Analytics Dashboard
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
             </div>
           </TabsContent>
 
+          {/* Live Alerts Tab */}
+          <TabsContent value="alerts">
+            <div className="space-y-6">
+              <DisasterAlertsPanel />
+            </div>
+          </TabsContent>
+
+          {/* Reports Tab */}
           <TabsContent value="reports">
             <Card>
               <CardHeader>
@@ -288,7 +333,7 @@ export const AdultsUI = ({ onBack }: AdultsUIProps) => {
                     <h4 className="font-semibold text-lg">School-Wide Analytics</h4>
                     <div className="bg-gray-50 p-4 rounded">
                       <p className="text-sm text-gray-600 mb-2">Overall preparedness levels, drill effectiveness, and improvement areas</p>
-                      <Button size="sm">View Analytics</Button>
+                      <Button size="sm" onClick={() => setCurrentSection('admin-dashboard')}>View Analytics</Button>
                     </div>
                   </div>
                 </div>
@@ -296,65 +341,141 @@ export const AdultsUI = ({ onBack }: AdultsUIProps) => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="emergency">
-            <Card className="border-red-200 bg-red-50">
-              <CardHeader>
-                <CardTitle className="text-red-800 flex items-center gap-2">
-                  <AlertTriangle className="h-6 w-6" />
-                  Emergency Response Center
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <h4 className="font-bold text-lg text-red-800 mb-4">Emergency Contacts</h4>
-                    <div className="space-y-2">
-                      <div className="p-3 bg-white rounded border">
-                        <p className="font-semibold">Police: 100</p>
-                      </div>
-                      <div className="p-3 bg-white rounded border">
-                        <p className="font-semibold">Fire: 101</p>
-                      </div>
-                      <div className="p-3 bg-white rounded border">
-                        <p className="font-semibold">Ambulance: 108</p>
-                      </div>
-                      <div className="p-3 bg-white rounded border">
-                        <p className="font-semibold">Disaster Management: 1078</p>
-                      </div>
+          {/* Resources Tab */}
+          <TabsContent value="resources">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Training Materials</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start">
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Instructor Guides
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <FileText className="h-4 w-4 mr-2" />
+                      Emergency Manuals
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                      Safety Checklists
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card>
+                <CardHeader>
+                  <CardTitle>Advanced Features</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => setCurrentSection('achievements')}
+                    >
+                      <Trophy className="h-4 w-4 mr-2" />
+                      Achievement System
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => setCurrentSection('routes')}
+                    >
+                      <MapPin className="h-4 w-4 mr-2" />
+                      Route Planning
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
+                      onClick={() => setCurrentSection('alerts')}
+                    >
+                      <BarChart3 className="h-4 w-4 mr-2" />
+                      Live Monitoring
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Support</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-2">
+                    <Button variant="outline" className="w-full justify-start">
+                      <Users className="h-4 w-4 mr-2" />
+                      Training Support
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Settings className="h-4 w-4 mr-2" />
+                      System Configuration
+                    </Button>
+                    <Button variant="outline" className="w-full justify-start">
+                      <Shield className="h-4 w-4 mr-2" />
+                      Security Settings
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
+
+          {/* Settings Tab */}
+          <TabsContent value="settings">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Configuration</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Alert Notifications</label>
+                      <Button variant="outline" size="sm" className="ml-2">Configure</Button>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">User Permissions</label>
+                      <Button variant="outline" size="sm" className="ml-2">Manage</Button>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Backup Settings</label>
+                      <Button variant="outline" size="sm" className="ml-2">Setup</Button>
                     </div>
                   </div>
-                  <div>
-                    <h4 className="font-bold text-lg text-red-800 mb-4">Quick Actions</h4>
-                    <div className="space-y-3">
-                      <Button className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3">
-                        🚨 Activate School Emergency Protocol
-                      </Button>
-                      <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white font-bold py-3">
-                        📢 Send Alert to All Staff
-                      </Button>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3">
-                        📋 Open Emergency Checklist
-                      </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Account Management</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium">Profile Settings</label>
+                      <Button variant="outline" size="sm" className="ml-2">Edit</Button>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Security</label>
+                      <Button variant="outline" size="sm" className="ml-2">Update</Button>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium">Preferences</label>
+                      <Button variant="outline" size="sm" className="ml-2">Customize</Button>
                     </div>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
-
-        {/* Navigation */}
-        <div className="text-center mt-8">
-          <Button 
-            onClick={onBack}
-            className="bg-gray-600 hover:bg-gray-700 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg"
-          >
-            🏠 Back to Age Selection
-          </Button>
-        </div>
-      </div>
+      </main>
+      
+      <AIChatbot />
     </div>
   );
-
-  return renderDashboard();
 };

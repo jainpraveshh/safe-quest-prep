@@ -2,8 +2,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Beaker, Atom, Zap, Home, BookOpen } from 'lucide-react';
+import { Beaker, Atom, Microscope, Calculator, Home } from 'lucide-react';
+import { DisasterAlertsPanel } from '@/components/DisasterAlertsPanel';
+import { AIChatbot } from '@/components/AIChatbot';
+import { EmergencyTools } from '@/components/EmergencyTools';
+import { EvacuationRoutes } from '@/components/EvacuationRoutes';
+import { DrillSimulation } from '@/components/DrillSimulation';
+import { AchievementSystem } from '@/components/AchievementSystem';
 
 interface HighSchoolUIProps {
   onBack: () => void;
@@ -12,7 +17,8 @@ interface HighSchoolUIProps {
 export const HighSchoolUI = ({ onBack }: HighSchoolUIProps) => {
   const [currentSection, setCurrentSection] = useState('home');
   const [completedExperiments, setCompletedExperiments] = useState<string[]>([]);
-  const [researchPoints, setResearchPoints] = useState(0);
+  const [labPoints, setLabPoints] = useState(0);
+  const [selectedDisaster, setSelectedDisaster] = useState<string | null>(null);
 
   const disasters = [
     {
@@ -61,217 +67,112 @@ export const HighSchoolUI = ({ onBack }: HighSchoolUIProps) => {
     }
   ];
 
-  const handleExperimentClick = (disaster: any) => {
-    setCurrentSection('lab');
-    if (!completedExperiments.includes(disaster.id)) {
-      setResearchPoints(prev => prev + 50);
-      setCompletedExperiments(prev => [...prev, disaster.id]);
+  const handleExperimentClick = (experiment: any) => {
+    setSelectedDisaster(experiment.id);
+    setCurrentSection('experiment');
+    if (!completedExperiments.includes(experiment.id)) {
+      setLabPoints(prev => prev + 50);
+      setCompletedExperiments(prev => [...prev, experiment.id]);
     }
   };
 
   const renderHome = () => (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-teal-50 p-6">
-      {/* Scientific Header with Floating Formulas */}
-      <div className="relative text-center mb-8 overflow-hidden">
-        {/* Floating Background Formulas */}
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="animate-float text-4xl font-mono text-blue-600 absolute top-10 left-10">E=mc²</div>
-          <div className="animate-float-delay text-3xl font-mono text-green-600 absolute top-20 right-20">F=ma</div>
-          <div className="animate-float text-2xl font-mono text-purple-600 absolute bottom-20 left-20">PV=nRT</div>
-          <div className="animate-float-delay text-3xl font-mono text-red-600 absolute bottom-10 right-10">H₂O</div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-50 to-green-50 p-6">
+      <div className="relative text-center mb-8">
+        <div className="flex justify-center items-center gap-4 mb-6">
+          <Beaker className="h-12 w-12 text-blue-600 animate-pulse" />
+          <Atom className="h-12 w-12 text-green-600 animate-spin" />
+          <Microscope className="h-12 w-12 text-purple-600 animate-bounce" />
         </div>
-        
-        <div className="relative z-10">
-          <div className="flex justify-center items-center gap-4 mb-6">
-            <Beaker className="h-12 w-12 text-blue-600 animate-pulse" />
-            <Atom className="h-12 w-12 text-green-600 animate-spin" />
-            <Zap className="h-12 w-12 text-purple-600 animate-bounce" />
-          </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-700 via-green-600 to-purple-600 bg-clip-text text-transparent mb-4">
-            DISASTER SCIENCE LAB
-          </h1>
-          <p className="text-xl text-gray-700 font-medium">
-            Apply scientific principles to understand and prevent disasters
-          </p>
-        </div>
+        <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-teal-600 to-green-600 bg-clip-text text-transparent mb-4">
+          DISASTER SCIENCE LAB
+        </h1>
+        <p className="text-xl text-gray-700 font-medium">
+          Apply scientific principles to understand disasters
+        </p>
       </div>
 
-      {/* Research Dashboard */}
       <div className="max-w-7xl mx-auto mb-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gradient-to-r from-blue-200 to-cyan-200 border-2 border-blue-400">
             <CardContent className="p-4 text-center">
               <Beaker className="h-8 w-8 text-blue-700 mx-auto mb-2" />
-              <p className="font-bold text-blue-800">Research Points: {researchPoints}</p>
+              <p className="font-bold text-blue-800">Lab Points: {labPoints}</p>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-r from-green-200 to-teal-200 border-2 border-green-400">
             <CardContent className="p-4 text-center">
-              <BookOpen className="h-8 w-8 text-green-700 mx-auto mb-2" />
+              <Calculator className="h-8 w-8 text-green-700 mx-auto mb-2" />
               <p className="font-bold text-green-800">Experiments: {completedExperiments.length}/4</p>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-r from-purple-200 to-indigo-200 border-2 border-purple-400">
             <CardContent className="p-4 text-center">
               <Atom className="h-8 w-8 text-purple-700 mx-auto mb-2" />
-              <p className="font-bold text-purple-800">Level: {Math.floor(researchPoints / 50) + 1}</p>
+              <p className="font-bold text-purple-800">Level: {Math.floor(labPoints / 50) + 1}</p>
             </CardContent>
           </Card>
           <Card className="bg-gradient-to-r from-yellow-200 to-orange-200 border-2 border-yellow-400">
             <CardContent className="p-4 text-center">
-              <Zap className="h-8 w-8 text-yellow-700 mx-auto mb-2" />
+              <Microscope className="h-8 w-8 text-yellow-700 mx-auto mb-2" />
               <p className="font-bold text-yellow-800">Rank: Researcher</p>
             </CardContent>
           </Card>
         </div>
 
-        {/* Scientific Modules */}
-        <Tabs defaultValue="experiments" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8">
-            <TabsTrigger value="experiments">🧪 Experiments</TabsTrigger>
-            <TabsTrigger value="simulations">💻 Simulations</TabsTrigger>
-            <TabsTrigger value="analysis">📊 Data Analysis</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="experiments">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {disasters.map((disaster, index) => (
-                <Card 
-                  key={disaster.id}
-                  className={`${disaster.color} ${disaster.borderColor} border-3 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-2 cursor-pointer overflow-hidden`}
-                  onClick={() => handleExperimentClick(disaster)}
-                >
-                  <CardHeader className="text-center">
-                    <div className="flex justify-center mb-4">
-                      <div className="p-4 bg-white/80 rounded-full backdrop-blur-sm">
-                        <span className="text-4xl">{disaster.icon}</span>
-                      </div>
-                    </div>
-                    <CardTitle className="text-2xl font-bold text-gray-800">
-                      {disaster.title}
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-lg text-gray-700 mb-4 font-medium">
-                      {disaster.description}
-                    </p>
-                    
-                    {/* Scientific Formula */}
-                    <div className="bg-white/70 p-4 rounded-lg mb-4 backdrop-blur-sm">
-                      <p className="font-mono text-lg font-bold text-gray-800 mb-2">
-                        {disaster.formula}
-                      </p>
-                      <p className="text-sm text-gray-600 font-semibold">
-                        {disaster.physics}
-                      </p>
-                    </div>
-                    
-                    <div className="bg-slate-200/70 p-3 rounded-lg mb-4">
-                      <p className="font-bold text-slate-800">
-                        🔬 {disaster.experiment}
-                      </p>
-                    </div>
-                    
-                    <Button 
-                      className="bg-gradient-to-r from-slate-600 to-blue-600 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105"
-                      size="lg"
-                    >
-                      Start Experiment 🚀
-                    </Button>
-                    {completedExperiments.includes(disaster.id) && (
-                      <Badge className="mt-2 bg-green-600 text-white font-bold">
-                        ✅ Research Complete
-                      </Badge>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="simulations">
-            <Card className="bg-gradient-to-r from-slate-200 to-blue-200 border-3 border-slate-400">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {disasters.map((experiment, index) => (
+            <Card 
+              key={experiment.id}
+              className={`${experiment.color} ${experiment.borderColor} border-3 shadow-xl hover:shadow-2xl transition-all cursor-pointer`}
+              onClick={() => handleExperimentClick(experiment)}
+            >
               <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold text-gray-800">
-                  🖥️ Virtual Reality Simulations
+                <div className="flex justify-center mb-4">
+                  <div className="p-4 bg-white/80 rounded-full">
+                    <span className="text-4xl">{experiment.icon}</span>
+                  </div>
+                </div>
+                <CardTitle className="text-2xl font-bold text-gray-800">
+                  {experiment.title}
                 </CardTitle>
               </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-white/70 p-6 rounded-lg text-center">
-                  <div className="text-6xl mb-4">🌊</div>
-                  <h4 className="text-xl font-bold mb-2">Fluid Dynamics Simulator</h4>
-                  <p className="text-gray-700">Real-time flood modeling with physics calculations</p>
+              <CardContent className="text-center">
+                <p className="text-lg text-gray-700 mb-4">{experiment.description}</p>
+                <div className="bg-white/70 p-4 rounded-lg mb-4">
+                  <p className="font-mono text-lg font-bold text-gray-800 mb-2">{experiment.formula}</p>
+                  <p className="text-sm text-gray-600">{experiment.physics}</p>
                 </div>
-                <div className="bg-white/70 p-6 rounded-lg text-center">
-                  <div className="text-6xl mb-4">🏗️</div>
-                  <h4 className="text-xl font-bold mb-2">Structural Analysis Tool</h4>
-                  <p className="text-gray-700">Test building designs against seismic forces</p>
-                </div>
+                <Button className="bg-gradient-to-r from-blue-600 to-teal-500 text-white font-bold">
+                  Run Experiment! ⚗️
+                </Button>
+                {completedExperiments.includes(experiment.id) && (
+                  <Badge className="mt-2 bg-green-600 text-white font-bold">✅ Complete</Badge>
+                )}
               </CardContent>
             </Card>
-          </TabsContent>
-
-          <TabsContent value="analysis">
-            <Card className="bg-gradient-to-r from-green-200 to-teal-200 border-3 border-green-400">
-              <CardHeader className="text-center">
-                <CardTitle className="text-3xl font-bold text-gray-800">
-                  📈 Scientific Data Analysis
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-white/70 p-6 rounded-lg text-center">
-                  <div className="text-4xl mb-4">📊</div>
-                  <h4 className="text-lg font-bold mb-2">Seismic Data</h4>
-                  <p className="text-sm text-gray-700">Analyze earthquake wave patterns</p>
-                </div>
-                <div className="bg-white/70 p-6 rounded-lg text-center">
-                  <div className="text-4xl mb-4">📈</div>
-                  <h4 className="text-lg font-bold mb-2">Weather Patterns</h4>
-                  <p className="text-sm text-gray-700">Track atmospheric conditions</p>
-                </div>
-                <div className="bg-white/70 p-6 rounded-lg text-center">
-                  <div className="text-4xl mb-4">🎯</div>
-                  <h4 className="text-lg font-bold mb-2">Risk Assessment</h4>
-                  <p className="text-sm text-gray-700">Calculate probability matrices</p>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
+          ))}
+        </div>
       </div>
 
-      {/* Navigation */}
       <div className="text-center">
-        <Button 
-          onClick={onBack}
-          className="bg-gradient-to-r from-gray-600 to-slate-700 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg"
-        >
+        <Button onClick={onBack} className="bg-gradient-to-r from-gray-700 to-blue-600 text-white font-bold">
           🏠 Back to Age Selection
         </Button>
       </div>
     </div>
   );
 
-  const renderLab = () => (
+  const renderExperiment = () => (
     <div className="min-h-screen bg-gradient-to-br from-green-100 via-blue-100 to-purple-100 p-6">
       <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-4xl font-bold text-blue-800 mb-6">
-          🎓 Experiment Complete!
-        </h2>
-        
+        <h2 className="text-4xl font-bold text-blue-800 mb-6">🎓 Experiment Complete!</h2>
         <Card className="bg-white shadow-xl border-4 border-blue-500">
           <CardContent className="p-8">
             <div className="text-8xl mb-6">🔬</div>
-            <h3 className="text-3xl font-bold text-gray-800 mb-4">
-              Scientific Excellence!
-            </h3>
-            <p className="text-lg text-gray-600 mb-6">
-              You earned 50 research points for completing this experiment!
-            </p>
-            <Button 
-              onClick={() => setCurrentSection('home')}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold text-lg py-3 px-8 rounded-lg shadow-lg"
-            >
+            <h3 className="text-3xl font-bold text-gray-800 mb-4">Scientific Excellence!</h3>
+            <p className="text-lg text-gray-600 mb-6">You earned 50 lab points!</p>
+            <Button onClick={() => setCurrentSection('home')} className="bg-gradient-to-r from-blue-600 to-purple-600 text-white font-bold">
               Continue Research! 🚀
             </Button>
           </CardContent>
@@ -280,5 +181,54 @@ export const HighSchoolUI = ({ onBack }: HighSchoolUIProps) => {
     </div>
   );
 
-  return currentSection === 'home' ? renderHome() : renderLab();
+  // Handle sections
+  if (currentSection === 'experiment') return renderExperiment();
+  if (currentSection === 'drill' && selectedDisaster) {
+    return (
+      <DrillSimulation 
+        disasterType={selectedDisaster}
+        onBack={() => setCurrentSection('home')}
+        onComplete={() => {
+          setLabPoints(prev => prev + 75);
+          setCurrentSection('home');
+        }}
+      />
+    );
+  }
+  if (currentSection === 'emergency') {
+    return <EmergencyTools onBack={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'routes') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-50 to-green-50 p-6">
+        <div className="max-w-6xl mx-auto">
+          <Button onClick={() => setCurrentSection('home')} className="mb-4 bg-gradient-to-r from-blue-600 to-teal-500 text-white font-bold">
+            🏠 Back to Science Lab
+          </Button>
+          <h1 className="text-4xl font-bold text-center mb-8">🗺️ SCIENTIFIC ROUTE ANALYSIS</h1>
+          <EvacuationRoutes disasterType="general" />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  if (currentSection === 'achievements') {
+    return <AchievementSystem onClose={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'alerts') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-100 via-teal-50 to-green-50 p-6">
+        <div className="max-w-6xl mx-auto">
+          <Button onClick={() => setCurrentSection('home')} className="mb-4 bg-gradient-to-r from-blue-600 to-teal-500 text-white font-bold">
+            🏠 Back to Science Lab
+          </Button>
+          <h1 className="text-4xl font-bold text-center mb-8">📊 DISASTER RESEARCH ANALYTICS</h1>
+          <DisasterAlertsPanel />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  
+  return renderHome();
 };

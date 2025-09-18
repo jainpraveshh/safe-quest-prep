@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Triangle, Square, Circle, Hexagon, Home } from 'lucide-react';
+import { Triangle, Square, Circle, Hexagon, Home, MapPin, AlertTriangle, Trophy } from 'lucide-react';
+import { DisasterAlertsPanel } from '@/components/DisasterAlertsPanel';
+import { AIChatbot } from '@/components/AIChatbot';
+import { EmergencyTools } from '@/components/EmergencyTools';
+import { EvacuationRoutes } from '@/components/EvacuationRoutes';
+import { DrillSimulation } from '@/components/DrillSimulation';
+import { AchievementSystem } from '@/components/AchievementSystem';
 
 interface MiddleSchoolUIProps {
   onBack: () => void;
@@ -12,6 +18,7 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
   const [currentSection, setCurrentSection] = useState('home');
   const [completedQuizzes, setCompletedQuizzes] = useState<string[]>([]);
   const [score, setScore] = useState(0);
+  const [selectedDisaster, setSelectedDisaster] = useState<string | null>(null);
 
   const disasters = [
     {
@@ -57,6 +64,7 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
   ];
 
   const handleDisasterClick = (disaster: any) => {
+    setSelectedDisaster(disaster.id);
     setCurrentSection('puzzle');
     if (!completedQuizzes.includes(disaster.id)) {
       setScore(prev => prev + 25);
@@ -105,6 +113,16 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
           </Card>
         </div>
 
+        {/* Emergency Access */}
+        <div className="mb-8">
+          <Button 
+            onClick={() => setCurrentSection('emergency')}
+            className="w-full bg-red-600 hover:bg-red-700 text-white font-bold text-xl py-4 rounded-lg shadow-lg animate-pulse"
+          >
+            🚨 EMERGENCY MODE 🚨
+          </Button>
+        </div>
+
         {/* Disaster Modules in Geometric Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {disasters.map((disaster, index) => (
@@ -132,12 +150,25 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
                     📐 {disaster.concept}
                   </p>
                 </div>
-                <Button 
-                  className="bg-gradient-to-r from-purple-500 to-orange-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105"
-                  size="lg"
-                >
-                  Solve Puzzle! 🧩
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-purple-500 to-orange-500 text-white font-bold text-lg py-3 px-6 rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105"
+                    size="lg"
+                    onClick={() => handleDisasterClick(disaster)}
+                  >
+                    Solve Puzzle! 🧩
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full bg-gradient-to-r from-cyan-500 to-blue-500 text-white border-0 font-bold"
+                    onClick={() => {
+                      setSelectedDisaster(disaster.id);
+                      setCurrentSection('drill');
+                    }}
+                  >
+                    Practice Drill! 🎯
+                  </Button>
+                </div>
                 {completedQuizzes.includes(disaster.id) && (
                   <Badge className="mt-2 bg-green-500 text-white font-bold">
                     ✅ Solved!
@@ -176,6 +207,34 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Additional Features Grid */}
+      <div className="max-w-4xl mx-auto mb-8 grid grid-cols-2 md:grid-cols-4 gap-4">
+        <Button 
+          onClick={() => setCurrentSection('alerts')}
+          className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white font-bold py-4"
+        >
+          📊 Live Alerts
+        </Button>
+        <Button 
+          onClick={() => setCurrentSection('routes')}
+          className="bg-gradient-to-r from-green-500 to-teal-500 text-white font-bold py-4"
+        >
+          🗺️ Routes Map
+        </Button>
+        <Button 
+          onClick={() => setCurrentSection('achievements')}
+          className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-bold py-4"
+        >
+          🏆 Achievements
+        </Button>
+        <Button 
+          onClick={() => setCurrentSection('emergency')}
+          className="bg-gradient-to-r from-red-500 to-pink-500 text-white font-bold py-4"
+        >
+          🚨 Emergency
+        </Button>
       </div>
 
       {/* Navigation */}
@@ -218,5 +277,70 @@ export const MiddleSchoolUI = ({ onBack }: MiddleSchoolUIProps) => {
     </div>
   );
 
-  return currentSection === 'home' ? renderHome() : renderPuzzle();
+  // Render different sections based on currentSection
+  if (currentSection === 'home') return renderHome();
+  if (currentSection === 'puzzle') return renderPuzzle();
+  if (currentSection === 'drill' && selectedDisaster) {
+    return (
+      <DrillSimulation 
+        disasterType={selectedDisaster}
+        onBack={() => setCurrentSection('home')}
+        onComplete={() => {
+          setScore(prev => prev + 50);
+          setCurrentSection('home');
+        }}
+      />
+    );
+  }
+  if (currentSection === 'emergency') {
+    return <EmergencyTools onBack={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'routes') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-50 to-cyan-100 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => setCurrentSection('home')}
+              className="mb-4 bg-gradient-to-r from-purple-500 to-orange-500 text-white font-bold"
+            >
+              🏠 Back to Geometry Lab
+            </Button>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-orange-500 to-cyan-600 bg-clip-text text-transparent mb-4">
+              📐 GEOMETRIC EVACUATION ROUTES
+            </h1>
+            <p className="text-lg text-muted-foreground">Calculate the shortest and safest paths using geometry!</p>
+          </div>
+          <EvacuationRoutes disasterType="general" />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  if (currentSection === 'achievements') {
+    return <AchievementSystem onClose={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'alerts') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-100 via-orange-50 to-cyan-100 p-6">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => setCurrentSection('home')}
+              className="mb-4 bg-gradient-to-r from-purple-500 to-orange-500 text-white font-bold"
+            >
+              🏠 Back to Geometry Lab
+            </Button>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-600 via-orange-500 to-cyan-600 bg-clip-text text-transparent mb-4">
+              📊 DISASTER ANALYTICS DASHBOARD
+            </h1>
+          </div>
+          <DisasterAlertsPanel />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  
+  return renderHome();
 };

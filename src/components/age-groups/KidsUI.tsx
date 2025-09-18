@@ -2,7 +2,13 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Star, Heart, Home, Trophy } from 'lucide-react';
+import { Star, Heart, Home, Trophy, Users, AlertTriangle, MapPin } from 'lucide-react';
+import { DisasterAlertsPanel } from '@/components/DisasterAlertsPanel';
+import { AIChatbot } from '@/components/AIChatbot';
+import { EmergencyTools } from '@/components/EmergencyTools';
+import { EvacuationRoutes } from '@/components/EvacuationRoutes';
+import { DrillSimulation } from '@/components/DrillSimulation';
+import { AchievementSystem } from '@/components/AchievementSystem';
 
 interface KidsUIProps {
   onBack: () => void;
@@ -12,6 +18,7 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
   const [currentSection, setCurrentSection] = useState('home');
   const [badges, setBadges] = useState<string[]>([]);
   const [points, setPoints] = useState(0);
+  const [selectedDisaster, setSelectedDisaster] = useState<string | null>(null);
 
   const disasters = [
     {
@@ -49,6 +56,7 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
   ];
 
   const handleDisasterClick = (disaster: any) => {
+    setSelectedDisaster(disaster.id);
     setCurrentSection('learning');
     // Add points and badge
     setPoints(prev => prev + 10);
@@ -112,12 +120,25 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
                 <p className="text-md text-gray-600 mb-4 italic">
                   {disaster.story}
                 </p>
-                <Button 
-                  className="bg-gradient-to-r from-green-400 to-blue-400 text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105"
-                  size="lg"
-                >
-                  Let's Learn! 🌟
-                </Button>
+                <div className="space-y-3">
+                  <Button 
+                    className="w-full bg-gradient-to-r from-green-400 to-blue-400 text-white font-bold text-lg py-3 px-6 rounded-full shadow-lg hover:shadow-xl transform hover:scale-105"
+                    size="lg"
+                    onClick={() => handleDisasterClick(disaster)}
+                  >
+                    Let's Learn! 🌟
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    className="w-full bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold text-lg py-2 px-4 rounded-full border-0"
+                    onClick={() => {
+                      setSelectedDisaster(disaster.id);
+                      setCurrentSection('drill');
+                    }}
+                  >
+                    Practice Drill! 🎯
+                  </Button>
+                </div>
                 {badges.includes(disaster.id) && (
                   <Badge className="mt-2 bg-gold text-yellow-800 font-bold">
                     ⭐ Completed!
@@ -152,6 +173,45 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
                 <p className="font-bold text-gray-800">Always stay with family!</p>
               </div>
             </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* More Features for Kids */}
+      <div className="max-w-4xl mx-auto mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+        <Card className="bg-gradient-to-br from-green-200 to-blue-200 border-4 border-white shadow-xl">
+          <CardContent className="p-4 text-center">
+            <div className="text-4xl mb-2">📍</div>
+            <Button 
+              onClick={() => setCurrentSection('routes')}
+              className="bg-green-500 text-white font-bold"
+            >
+              Safety Map! 🗺️
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-yellow-200 to-orange-200 border-4 border-white shadow-xl">
+          <CardContent className="p-4 text-center">
+            <div className="text-4xl mb-2">🏆</div>
+            <Button 
+              onClick={() => setCurrentSection('achievements')}
+              className="bg-yellow-500 text-white font-bold"
+            >
+              My Badges! ⭐
+            </Button>
+          </CardContent>
+        </Card>
+        
+        <Card className="bg-gradient-to-br from-purple-200 to-pink-200 border-4 border-white shadow-xl">
+          <CardContent className="p-4 text-center">
+            <div className="text-4xl mb-2">🤖</div>
+            <Button 
+              onClick={() => setCurrentSection('alerts')}
+              className="bg-purple-500 text-white font-bold"
+            >
+              Safety News! 📰
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -199,5 +259,69 @@ export const KidsUI = ({ onBack }: KidsUIProps) => {
     </div>
   );
 
-  return currentSection === 'home' ? renderHome() : renderLearning();
+  // Render different sections based on currentSection
+  if (currentSection === 'home') return renderHome();
+  if (currentSection === 'learning') return renderLearning();
+  if (currentSection === 'drill' && selectedDisaster) {
+    return (
+      <DrillSimulation 
+        disasterType={selectedDisaster}
+        onBack={() => setCurrentSection('home')}
+        onComplete={() => {
+          setPoints(prev => prev + 50);
+          setCurrentSection('home');
+        }}
+      />
+    );
+  }
+  if (currentSection === 'emergency') {
+    return <EmergencyTools onBack={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'routes') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => setCurrentSection('home')}
+              className="mb-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold"
+            >
+              🏠 Back Home
+            </Button>
+            <h1 className="text-4xl font-bold text-purple-800 mb-4">
+              🗺️ Safety Routes for Super Kids! 
+            </h1>
+          </div>
+          <EvacuationRoutes disasterType="general" />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  if (currentSection === 'achievements') {
+    return <AchievementSystem onClose={() => setCurrentSection('home')} />;
+  }
+  if (currentSection === 'alerts') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-yellow-100 via-pink-100 to-blue-100 p-6">
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => setCurrentSection('home')}
+              className="mb-4 bg-gradient-to-r from-purple-400 to-pink-400 text-white font-bold"
+            >
+              🏠 Back Home
+            </Button>
+            <h1 className="text-4xl font-bold text-purple-800 mb-4">
+              🚨 Safety News for Super Kids! 📰
+            </h1>
+          </div>
+          <DisasterAlertsPanel />
+        </div>
+        <AIChatbot />
+      </div>
+    );
+  }
+  
+  return renderHome();
 };
