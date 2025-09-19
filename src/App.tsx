@@ -11,6 +11,7 @@ import NotFound from "./pages/NotFound";
 import { LoginPage } from "@/pages/LoginPage";
 import { SignupPage } from "@/pages/SignupPage";
 
+
 const queryClient = new QueryClient();
 
 const App = () => (

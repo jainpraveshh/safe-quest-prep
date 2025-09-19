@@ -3,6 +3,7 @@ import { Play, Pause, Volume2, VolumeX } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
+
 interface AnimatedVideoCardProps {
   title: string;
   description: string;
@@ -48,7 +49,6 @@ export const AnimatedVideoCard = ({
     setIsPlaying(false);
   };
 
-  // Animated SVG Placeholder when video fails to load
   const renderAnimatedPlaceholder = () => {
     const getEmoji = () => {
       if (title.includes('Fire')) return '🚒';
@@ -92,7 +92,7 @@ export const AnimatedVideoCard = ({
             renderAnimatedPlaceholder()
           )}
           
-          {/* Video Controls - Only show if video is available */}
+          {/* ✅ Video Controls */}
           {!hasError && (
             <div className="absolute bottom-2 right-2 flex gap-2">
               <Button
